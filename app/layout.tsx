@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+// 한글 글꼴 — Pretendard 가변 글꼴 파일 1개를 앱 안에 넣어 쓴다 (npm 패키지 pretendard, OFL 라이선스)
+// DESIGN 5는 Noto Sans KR(next/font/google)이었지만, 빌드 때 Google Fonts에서 한글 조각 파일 수백 개를 받다가
+// 시간 초과로 빌드가 실패해서 외부 다운로드가 없는 이 방식으로 바꿨다. (Check 단계 CHECK.md에 Gap으로 기록)
+const pretendard = localFont({
+  src: "../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
+  variable: "--font-noto-kr",
+  weight: "45 920",
+  display: "swap",
+  preload: false, // 파일이 2MB라 미리 불러오지 않고, 그동안은 기본 글꼴로 보여 준다
 });
 
 export const metadata: Metadata = {
@@ -21,11 +22,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col">
+        {/* 좁은 화면(스마트폰) 안내 — PRD 4번 예외 흐름, DESIGN 1-1 (폭 768px 미만에서만 보임) */}
+        <div
+          role="note"
+          className="sticky top-0 z-50 border-b border-line bg-lime px-4 py-2 text-center text-sm font-medium text-ink md:hidden"
+        >
+          📱 PC·노트북 웹캠에서 이용해 주세요. 이 화면에서는 카메라 없이 보기 모드만 쓸 수 있어요.
+        </div>
+        {children}
+      </body>
     </html>
   );
 }
