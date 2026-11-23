@@ -1,0 +1,25 @@
+# CLAUDE.md — 모션 스트레치 (Motion Stretch) 프로젝트 규칙
+
+## 프로젝트 개요
+- 종목별 스트레칭을 3D 정답 캐릭터로 보여 주고, 카메라로 인식한 내 자세를 정답과 비교해 같은 자세를 따라 하게 도와 부상을 예방하는 스포츠테크 웹앱
+- 무엇을·왜 만드는지의 기준 문서는 `PRD.md`다. 판단이 갈리면 언제나 `PRD.md`를 따른다.
+- 진행 순서는 `CURRICULUM.md`(교재 지침)를 따른다.
+
+## 프로젝트 규칙
+- 모든 설명과 주석은 한국어로 작성한다.
+- 새 파일은 앱 폴더(`motion-stretch`) 안에만 만든다.
+- 기술 스택은 PRD에 정한 대로 Next.js로 고정한다. 다른 프레임워크로 바꾸거나 마이그레이션을 제안하지 않는다. 배포는 Vercel을 사용한다.
+- 코드를 바꾸면 반드시 무엇을 왜 바꿨는지 한 줄로 알려준다.
+- `.env` 등 비밀 정보 파일과 `node_modules`는 `.gitignore`에 등록해 두고, 절대 커밋하지 않는다.
+- 외부 서비스 인증이 필요하면 토큰 값을 묻거나 채팅에 출력하지 않고 `.env`의 값을 사용한다. (예: Supabase CLI는 `SUPABASE_ACCESS_TOKEN`, Vercel CLI는 `VERCEL_TOKEN`, OpenAI는 `OPENAI_API_KEY`)
+- 파일을 지워야 할 때는 바로 삭제하지 말고 `trash-can` 폴더로 옮겨만 두고, 사용자가 확인 후 삭제한다. `trash-can`은 `.gitignore`에 등록해 커밋되지 않게 한다.
+- 이미 설치된 서브에이전트(bkit의 design-validator, gap-detector, security-architect 등)는 필요할 때마다 적극 활용한다.
+- 커밋 메시지는 한국어로, 무엇을 왜 바꿨는지 한 줄로 적는다.
+- 커밋하기 전에 `.env` 같은 비밀 값 파일이 커밋에 들어가지 않았는지 확인한다.
+
+## 앱 고유 규칙
+- 이 프로젝트의 Next.js는 학습 데이터와 다를 수 있다. 코드를 쓰기 전에 아래 `AGENTS.md` 안내대로 `node_modules/next/dist/docs/`의 해당 문서를 먼저 확인한다.
+- 카메라 영상은 브라우저 밖으로 보내지 않는다. 서버(OpenAI)로는 동작 이름과 관절별 각도 차이 숫자만 보낸다. (PRD 7번)
+- `OPENAI_API_KEY`는 서버 쪽 코드에서만 읽고, `NEXT_PUBLIC_` 접두어를 붙이지 않는다.
+
+@AGENTS.md
