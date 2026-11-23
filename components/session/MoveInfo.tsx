@@ -21,10 +21,15 @@ export type ViewNav = {
   doneHref: string;
 };
 
-export default function MoveInfo({ step, nav }: { step: Step; mode: SessionMode; nav?: ViewNav }) {
+export default function MoveInfo({ step, mode, nav }: { step: Step; mode: SessionMode; nav?: ViewNav }) {
   const facing = facingText(step);
+  // 카메라 모드: 정답·나 아래에 가로로 길게 (DESIGN 1-3 아래 정보 영역)
+  const wide = mode === "camera";
   return (
-    <section aria-label="동작 정보" className="glass flex flex-col rounded-[2rem] p-6 md:p-8">
+    <section
+      aria-label="동작 정보"
+      className={`glass flex flex-col rounded-[2rem] p-6 md:p-8 ${wide ? "md:col-span-2" : ""}`}
+    >
       <p className="text-sm font-semibold text-sky">{step.move.target}</p>
       <h2 className="mt-2 text-3xl font-black leading-tight tracking-tight md:text-4xl">
         {step.move.name}

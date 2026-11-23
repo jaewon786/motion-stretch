@@ -7,7 +7,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import TargetPanel from "./TargetPanel";
 import MoveInfo from "./MoveInfo";
+import MirrorPanel from "./MirrorPanel";
 import { getSport, getSteps, type SportId } from "@/lib/data/sports";
+import { useCamera } from "@/lib/camera/useCamera";
 
 export type SessionMode = "camera" | "view";
 
@@ -19,6 +21,11 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
   const step = steps[stepIndex];
   const isFirst = stepIndex === 0;
   const isLast = stepIndex === steps.length - 1;
+
+  // 카메라: 카메라 모드에서만 켜고, 화면을 나가면(컴포넌트가 사라지면) 즉시 끈다 (PRD 7번)
+  // 작업 14에서 완료 화면으로 바뀔 때도 enabled를 false로 바꿔 끈다.
+  const camera = useCamera(mode === "camera");
+  const cameraOn = camera.status === "active";
 
   // 보기 모드: [이전]/[다음] 버튼과 키보드 ←/→ 로 동작을 넘긴다 (PRD 4번 예외 흐름, DESIGN 1-3 보기 모드)
   const goPrev = useCallback(() => setStepIndex((i) => Math.max(0, i - 1)), []);
@@ -74,19 +81,41 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
               ))}
             </ol>
           </div>
-          <span
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-              mode === "camera" ? "bg-lime/15 text-lime ring-1 ring-lime/30" : "bg-sky/15 text-sky ring-1 ring-sky/30"
-            }`}
-          >
-            {mode === "camera" ? "📷 카메라 모드" : "👀 보기 모드"}
-          </span>
+          {/* 카메라를 쓰는 동안 계속 보이는 표시 (PRD 7번) */}
+          {cameraOn ? (
+            <span
+              role="status"
+              className="flex items-center gap-2 rounded-full bg-bad/15 px-3 py-1.5 text-xs font-semibold text-red-300 ring-1 ring-bad/40"
+            >
+              <span className="h-2 w-2 animate-pulse rounded-full bg-bad" aria-hidden />
+              카메라 사용 중
+            </span>
+          ) : (
+            <span
+              className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                mode === "camera"
+                  ? "bg-lime/15 text-lime ring-1 ring-lime/30"
+                  : "bg-sky/15 text-sky ring-1 ring-sky/30"
+              }`}
+            >
+              {mode === "camera" ? "📷 카메라 모드" : "👀 보기 모드"}
+            </span>
+          )}
         </div>
       </header>
 
       {/* ── 가운데: 정답 / 나 ── */}
       <main className="mx-auto grid w-full max-w-7xl flex-1 gap-4 px-5 py-4 md:grid-cols-2 md:px-8">
         <TargetPanel step={step} />
+        {mode === "camera" && (
+          <MirrorPanel
+            stream={camera.stream}
+            status={camera.status}
+            error={camera.error}
+            onRetry={camera.retry}
+            viewModeHref={`/sports/${sport.id}/session?mode=view`}
+          />
+        )}
         <MoveInfo
           step={step}
           mode={mode}
