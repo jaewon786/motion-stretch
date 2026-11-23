@@ -8,24 +8,11 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import type { Landmark, NormalizedLandmark, PoseLandmarker } from "@mediapipe/tasks-vision";
 import { selectPerson } from "./personSelect";
-import type { KeypointId } from "./skeleton";
 
 /** 앱 안에 넣어 둔 MediaPipe 파일 위치 (외부 서버를 부르지 않는다) */
 const WASM_BASE = "/mediapipe/wasm";
 // full(정확도형) 모델: lite는 다리·옆모습 인식이 불안정해 사용자 확인 후 바꿨다 (DESIGN 5의 lite와 차이 → CHECK.md에 기록)
 const MODEL_PATH = "/mediapipe/pose_landmarker_full.task";
-
-/** 관절 점 이름 → MediaPipe 관절 번호 (왼쪽/오른쪽은 사람 몸 기준으로 MediaPipe와 같다) */
-export const MP_INDEX: Record<KeypointId, number> = {
-  shoulderL: 11, shoulderR: 12,
-  elbowL: 13, elbowR: 14,
-  wristL: 15, wristR: 16,
-  indexL: 19, indexR: 20,
-  hipL: 23, hipR: 24,
-  kneeL: 25, kneeR: 26,
-  ankleL: 27, ankleR: 28,
-  toeL: 31, toeR: 32,
-};
 
 /** 한 번 인식한 결과 (고른 한 사람) */
 export type PoseFrame = {

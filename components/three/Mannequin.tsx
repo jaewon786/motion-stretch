@@ -4,7 +4,7 @@
 // Design Ref: DESIGN 4 — 설계안 C(마네킹 + 고급 연출): 정답은 유리 느낌 하늘색, 나는 무광 흰색, 핵심 관절에 빛나는 링
 // 정답 자세(solvePose 결과)와 카메라로 본 내 관절 점을 같은 컴포넌트로 그린다.
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { clonePoints, lerpPointsInPlace, type KeypointId, type PosePoints } from "@/lib/pose/skeleton";
@@ -23,6 +23,11 @@ export type MannequinProps = {
   rings?: Partial<Record<JointAngleId, JointState>>;
   /** 따라가는 빠르기(1초당). 클수록 빨리 붙는다 */
   followSpeed?: number;
+  /**
+   * 실시간 관절 점 (카메라로 본 내 자세 — 작업 9). 값이 있으면 points 대신 매 프레임 이것을 따라간다.
+   * 매 프레임 바뀌는 값이라 화면 다시 그리기(React 렌더) 없이 ref로 읽는다.
+   */
+  livePointsRef?: RefObject<PosePoints | null>;
 };
 
 /** 링 색 (밝기를 1보다 크게 해 빛 번짐 효과가 걸리게 함) */
@@ -66,7 +71,7 @@ const tmpZ = new THREE.Vector3();
 const tmpMat = new THREE.Matrix4();
 const tmpQuat = new THREE.Quaternion();
 
-export default function Mannequin({ points, variant, rings, followSpeed = 8 }: MannequinProps) {
+export default function Mannequin({ points, variant, rings, followSpeed = 8, livePointsRef }: MannequinProps) {
   const current = useRef<PosePoints>(clonePoints(points));
   const target = useRef<PosePoints>(points);
   useEffect(() => {
@@ -144,7 +149,8 @@ export default function Mannequin({ points, variant, rings, followSpeed = 8 }: M
   useFrame((state, delta) => {
     const p = current.current;
     // 목표 자세를 향해 부드럽게 이동 (프레임 속도와 무관하게 같은 빠르기)
-    lerpPointsInPlace(p, target.current, 1 - Math.exp(-followSpeed * Math.min(delta, 0.1)));
+    const goal = livePointsRef?.current ?? target.current;
+    lerpPointsInPlace(p, goal, 1 - Math.exp(-followSpeed * Math.min(delta, 0.1)));
 
     // 팔다리 마디
     LIMBS.forEach(([a, b], i) => {
