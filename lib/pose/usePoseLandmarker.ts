@@ -12,7 +12,8 @@ import type { KeypointId } from "./skeleton";
 
 /** 앱 안에 넣어 둔 MediaPipe 파일 위치 (외부 서버를 부르지 않는다) */
 const WASM_BASE = "/mediapipe/wasm";
-const MODEL_PATH = "/mediapipe/pose_landmarker_lite.task";
+// full(정확도형) 모델: lite는 다리·옆모습 인식이 불안정해 사용자 확인 후 바꿨다 (DESIGN 5의 lite와 차이 → CHECK.md에 기록)
+const MODEL_PATH = "/mediapipe/pose_landmarker_full.task";
 
 /** 관절 점 이름 → MediaPipe 관절 번호 (왼쪽/오른쪽은 사람 몸 기준으로 MediaPipe와 같다) */
 export const MP_INDEX: Record<KeypointId, number> = {
