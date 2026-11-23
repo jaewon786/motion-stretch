@@ -11,6 +11,8 @@ import Mannequin from "@/components/three/Mannequin";
 import { REST_POSE, solvePose, type PosePoints } from "@/lib/pose/skeleton";
 import { PointsSmoother, worldToPoints } from "@/lib/pose/retarget";
 import type { PoseFrame } from "@/lib/pose/usePoseLandmarker";
+import type { JointState } from "@/components/three/Mannequin";
+import type { JointAngleId } from "@/lib/pose/types";
 
 /** 매 프레임 최신 인식 결과를 관절 점으로 바꿔 livePointsRef에 넣는다 (화면 다시 그리기 없음) */
 function LiveDriver({
@@ -29,14 +31,21 @@ function LiveDriver({
   return null;
 }
 
-export default function MeScene({ frameRef }: { frameRef: RefObject<PoseFrame | null> }) {
+export default function MeScene({
+  frameRef,
+  rings,
+}: {
+  frameRef: RefObject<PoseFrame | null>;
+  /** 핵심 관절별 색 (작업 10 비교 결과) */
+  rings?: Partial<Record<JointAngleId, JointState>>;
+}) {
   const restPoints = useMemo(() => solvePose(REST_POSE), []);
   const livePointsRef = useRef<PosePoints | null>(null);
   return (
     // 자세 인식에 GPU를 양보하려고 무거운 효과는 끈다 (SC-2)
     <StageCanvas className="h-full w-full" mirror effects={false}>
       <LiveDriver frameRef={frameRef} livePointsRef={livePointsRef} />
-      <Mannequin points={restPoints} livePointsRef={livePointsRef} variant="me" followSpeed={18} />
+      <Mannequin points={restPoints} livePointsRef={livePointsRef} variant="me" followSpeed={18} rings={rings} />
     </StageCanvas>
   );
 }

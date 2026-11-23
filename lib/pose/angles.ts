@@ -43,6 +43,13 @@ const TRIPLES: Partial<Record<JointAngleId, [KeypointId, KeypointId, KeypointId]
 
 export type JointAngles = Record<JointAngleId, number>;
 
+/** 관절 각도 하나를 재는 데 쓰는 관절 점들 (판정 제외 여부를 정할 때 이 점들의 보임 정도를 본다) */
+export function jointKeypoints(id: JointAngleId): KeypointId[] {
+  const triple = TRIPLES[id];
+  if (triple) return triple;
+  return ["shoulderL", "shoulderR", "hipL", "hipR"]; // 몸통 기울기
+}
+
 /** 관절 점 16개 → 판정 관절 각도 17개 */
 export function computeAngles(p: PosePoints): JointAngles {
   const out = {} as JointAngles;

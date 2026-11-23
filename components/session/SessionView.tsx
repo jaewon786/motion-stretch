@@ -11,6 +11,7 @@ import MirrorPanel from "./MirrorPanel";
 import { getSport, getSteps, type SportId } from "@/lib/data/sports";
 import { useCamera } from "@/lib/camera/useCamera";
 import { usePoseLandmarker } from "@/lib/pose/usePoseLandmarker";
+import { usePoseComparison } from "@/lib/pose/usePoseComparison";
 
 export type SessionMode = "camera" | "view";
 
@@ -31,6 +32,9 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
   // 자세 인식: 카메라가 켜졌을 때만 MediaPipe를 불러와 돌린다 (DESIGN 2 처리 1~2)
   const videoRef = useRef<HTMLVideoElement>(null);
   const pose = usePoseLandmarker(videoRef, cameraOn);
+
+  // 정답과 비교: 핵심 관절별 차이·색·일치도 (DESIGN 2 처리 3b~4, SC-3)
+  const comparison = usePoseComparison(pose.frameRef, step, pose.status === "ready");
 
   // 보기 모드: [이전]/[다음] 버튼과 키보드 ←/→ 로 동작을 넘긴다 (PRD 4번 예외 흐름, DESIGN 1-3 보기 모드)
   const goPrev = useCallback(() => setStepIndex((i) => Math.max(0, i - 1)), []);
@@ -124,6 +128,7 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
             fps={pose.fps}
             people={pose.people}
             frameRef={pose.frameRef}
+            comparison={comparison}
           />
         )}
         <MoveInfo

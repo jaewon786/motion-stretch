@@ -21,6 +21,13 @@ export const MP_INDEX: Record<KeypointId, number> = {
   toeL: 31, toeR: 32,
 };
 
+/** MediaPipe 결과의 보임 정도(0~1) → 관절 점별 보임 정도 (판정 제외에 사용, DESIGN 2 처리 2) */
+export function visibilityOf(image: { visibility?: number }[]): Record<KeypointId, number> {
+  const out = {} as Record<KeypointId, number>;
+  for (const id of KEYPOINT_IDS) out[id] = image[MP_INDEX[id]]?.visibility ?? 0;
+  return out;
+}
+
 /** MediaPipe 3D 좌표 → 관절 점 (바닥 맞춤 포함). 새 객체를 돌려준다 */
 export function worldToPoints(world: Landmark[]): PosePoints {
   const points = {} as PosePoints;

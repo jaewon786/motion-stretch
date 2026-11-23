@@ -11,7 +11,10 @@ import CameraGate from "./CameraGate";
 import PoseOverlay from "./PoseOverlay";
 import type { CameraErrorKind, CameraStatus } from "@/lib/camera/useCamera";
 import type { PoseFrame, PoseStatus } from "@/lib/pose/usePoseLandmarker";
-import { TARGET_FPS } from "@/lib/config/thresholds";
+import { PASS_SCORE, TARGET_FPS } from "@/lib/config/thresholds";
+import type { CompareResult } from "@/lib/pose/compare";
+import type { JointState } from "@/components/three/Mannequin";
+import type { JointAngleId } from "@/lib/pose/types";
 
 // 3D는 브라우저에서만 그린다 (DESIGN 5: ssr false)
 const MeScene = dynamic(() => import("./MeScene"), { ssr: false });
@@ -27,6 +30,8 @@ export type MirrorPanelProps = {
   fps: number;
   people: number;
   frameRef: RefObject<PoseFrame | null>;
+  /** 정답과 비교한 결과 (작업 10). 사람이 안 보이면 null */
+  comparison: CompareResult | null;
 };
 
 export default function MirrorPanel({
@@ -40,6 +45,7 @@ export default function MirrorPanel({
   fps,
   people,
   frameRef,
+  comparison,
 }: MirrorPanelProps) {
   // 스트림이 바뀌면 <video>에 연결한다
   useEffect(() => {
@@ -51,6 +57,12 @@ export default function MirrorPanel({
 
   const cameraOn = cameraStatus === "active";
 
+  // 핵심 관절별 링 색 (DESIGN 4 관절 링: ±15° 초록, ±30° 노랑, 그 밖 빨강)
+  const rings = comparison
+    ? (Object.fromEntries(comparison.joints.map((j) => [j.joint, j.grade])) as Partial<Record<JointAngleId, JointState>>)
+    : undefined;
+  const score = comparison?.score ?? null;
+
   return (
     <section
       aria-label="내 자세"
@@ -59,7 +71,7 @@ export default function MirrorPanel({
       {/* 큰 화면: 내 동작을 거울처럼 따라 하는 3D 마네킹 (자세 인식이 준비된 뒤에 그린다) */}
       {poseStatus === "ready" && (
         <div className="absolute inset-0">
-          <MeScene frameRef={frameRef} />
+          <MeScene frameRef={frameRef} rings={rings} />
         </div>
       )}
 
@@ -90,6 +102,23 @@ export default function MirrorPanel({
         >
           인식 {fps}회/초
         </span>
+      )}
+
+      {/* 위 가운데: 일치도 (SC-3: 0~100%) — 80% 이상이면 초록 */}
+      {poseStatus === "ready" && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-ink/75 px-4 py-1.5 text-sm font-bold tabular-nums ring-1 ring-line"
+        >
+          {score === null ? (
+            <span className="text-muted">핵심 부위가 보이게 서 주세요</span>
+          ) : (
+            <span className={score >= PASS_SCORE ? "text-good" : score >= 50 ? "text-warn" : "text-red-300"}>
+              일치도 {Math.round(score)}%
+            </span>
+          )}
+        </div>
       )}
 
       {/* 여러 사람이 잡힘: 가운데 가장 크게 잡힌 한 명만 인식 (PRD 4번 예외 흐름) */}
