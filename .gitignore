@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 비밀 값 파일은 절대 커밋하지 않는다 (교재 Part 2 STEP 2)
+.env
+
+# 지울 파일을 잠시 옮겨 두는 폴더 (사용자 확인 후 삭제, 커밋하지 않음)
+trash-can/
+
+# bkit 플러그인 실행 기록 (도구가 자동으로 계속 바꾸는 파일)
+.bkit/
