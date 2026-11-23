@@ -4,8 +4,9 @@
 // Design Ref: DESIGN 4 — 설계안 C 연출. 외부 파일(HDR 등)을 불러오지 않고 앱 안에서 환경광을 만든다.
 // Design Ref: DESIGN 4 "성능" — 기기가 느리면 후처리·반사를 끄고 해상도를 낮춘다 (SC-2 확보)
 
-import { useState, type ReactNode } from "react";
-import { Canvas } from "@react-three/fiber";
+import { useRef, useState, type ReactNode } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import type { Group } from "three";
 import {
   ContactShadows,
   Environment,
@@ -34,6 +35,27 @@ export type StageCanvasProps = {
 };
 
 const BG = "#060a16";
+
+/** 캐릭터 방향 회전을 부드럽게 따라가는 무리 (정면 ↔ 옆 전환이 뚝 끊기지 않게) */
+function YawGroup({ yawDeg, mirror, children }: { yawDeg: number; mirror: boolean; children: ReactNode }) {
+  const ref = useRef<Group>(null);
+  const target = (yawDeg * Math.PI) / 180;
+  // 처음 각도만 속성으로 주고, 이후 변화는 useFrame에서 천천히 따라간다 (속성으로 주면 바로 튀어 버림)
+  const [initialYaw] = useState(target);
+  useFrame((state, delta) => {
+    const g = ref.current;
+    if (!g) return;
+    const diff = target - g.rotation.y;
+    if (Math.abs(diff) < 1e-3) return;
+    g.rotation.y += diff * (1 - Math.exp(-6 * Math.min(delta, 0.1)));
+    state.invalidate(); // 가벼운 모드(바뀔 때만 그리기)에서도 회전이 끝까지 그려지게
+  });
+  return (
+    <group ref={ref} rotation-y={initialYaw} scale={[mirror ? -1 : 1, 1, 1]}>
+      {children}
+    </group>
+  );
+}
 
 export default function StageCanvas({
   children,
@@ -96,9 +118,9 @@ export default function StageCanvas({
         </Environment>
 
         {/* 캐릭터: 방향 회전 + 거울 반전 */}
-        <group rotation-y={(yawDeg * Math.PI) / 180} scale={[mirror ? -1 : 1, 1, 1]}>
+        <YawGroup yawDeg={yawDeg} mirror={mirror}>
           {children}
-        </group>
+        </YawGroup>
 
         {/* 바닥: 살짝 반사되는 어두운 바닥 + 발광 원 + 접지 그림자 */}
         <mesh rotation-x={-Math.PI / 2} position={[0, 0, 0]} receiveShadow>
