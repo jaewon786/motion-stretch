@@ -125,8 +125,9 @@ export default function StageCanvas({
         </mesh>
         <ContactShadows position={[0, 0.003, 0]} opacity={0.65} scale={4} blur={2.4} far={2} resolution={512} />
 
+        {/* 조종기는 항상 켜 두어야 카메라가 몸 가운데(target)를 바라본다. 돌려 보기를 막을 때는 회전·확대만 끈다 */}
         <OrbitControls
-          enabled={interactive}
+          enableRotate={interactive}
           enablePan={false}
           enableZoom={interactive}
           target={[0, 0.95, 0]}
