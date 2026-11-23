@@ -31,6 +31,8 @@ export type StageCanvasProps = {
   accent?: string;
   /** 가벼운 모드: 작은 미리보기용. 반사 바닥·후처리·실시간 그림자를 끄고, 바뀔 때만 다시 그린다 */
   lite?: boolean;
+  /** 반사 바닥·빛 번짐 같은 무거운 효과를 켤지. 카메라 모드에서는 자세 인식에 GPU를 양보하려고 끈다 (SC-2) */
+  effects?: boolean;
   className?: string;
 };
 
@@ -65,10 +67,12 @@ export default function StageCanvas({
   interactive = true,
   accent = "#c6ff3d",
   lite = false,
+  effects = true,
   className,
 }: StageCanvasProps) {
-  // 기기 성능에 따라 고급 연출을 켜고 끈다 (가벼운 모드는 처음부터 끔)
-  const [high, setHigh] = useState(!lite);
+  // 기기 성능에 따라 고급 연출을 켜고 끈다 (가벼운 모드·효과 끔이면 처음부터 끔)
+  const [perfOk, setPerfOk] = useState(true);
+  const high = perfOk && !lite && effects;
   const [dpr, setDpr] = useState(lite ? 1.5 : 1.75);
 
   return (
@@ -84,7 +88,7 @@ export default function StageCanvas({
         {!lite && (
           <PerformanceMonitor
             onDecline={() => {
-              setHigh(false);
+              setPerfOk(false);
               setDpr(1);
             }}
             onIncline={() => setDpr(1.75)}

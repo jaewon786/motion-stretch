@@ -31,7 +31,7 @@ export function facingText(step: Step): { icon: string; title: string; detail: s
   return { icon: "⬆", title: "정면으로 서기", detail: "카메라를 정면으로 바라보고 서세요" };
 }
 
-export default function TargetPanel({ step }: { step: Step }) {
+export default function TargetPanel({ step, lightweight = false }: { step: Step; lightweight?: boolean }) {
   const facing = facingText(step);
   // 단계가 바뀌면 서는 방향 안내를 ORIENT_SEC 동안 크게 보여 준다
   // (안내를 이미 닫은 단계의 key만 기록 — 새 단계가 되면 자동으로 다시 보인다)
@@ -48,7 +48,7 @@ export default function TargetPanel({ step }: { step: Step }) {
       aria-label="정답 자세"
       className="glass relative min-h-[420px] overflow-hidden rounded-[2rem] md:min-h-[560px]"
     >
-      <TargetScene step={step} />
+      <TargetScene step={step} lightweight={lightweight} />
 
       {/* 왼쪽 위: 이름표 */}
       <span className="pointer-events-none absolute left-4 top-4 rounded-full bg-sky/15 px-3 py-1 text-xs font-semibold text-sky ring-1 ring-sky/30">

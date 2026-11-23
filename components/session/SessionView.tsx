@@ -3,13 +3,14 @@
 // 스트레칭 화면 전체 조립 — 위 진행 막대, 왼쪽 정답 캐릭터, 오른쪽 내 캐릭터 자리(작업 7~9) / 동작 설명, 아래 정보 막대
 // Design Ref: DESIGN 1-3, DESIGN 6 (SessionView)
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import TargetPanel from "./TargetPanel";
 import MoveInfo from "./MoveInfo";
 import MirrorPanel from "./MirrorPanel";
 import { getSport, getSteps, type SportId } from "@/lib/data/sports";
 import { useCamera } from "@/lib/camera/useCamera";
+import { usePoseLandmarker } from "@/lib/pose/usePoseLandmarker";
 
 export type SessionMode = "camera" | "view";
 
@@ -26,6 +27,10 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
   // 작업 14에서 완료 화면으로 바뀔 때도 enabled를 false로 바꿔 끈다.
   const camera = useCamera(mode === "camera");
   const cameraOn = camera.status === "active";
+
+  // 자세 인식: 카메라가 켜졌을 때만 MediaPipe를 불러와 돌린다 (DESIGN 2 처리 1~2)
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const pose = usePoseLandmarker(videoRef, cameraOn);
 
   // 보기 모드: [이전]/[다음] 버튼과 키보드 ←/→ 로 동작을 넘긴다 (PRD 4번 예외 흐름, DESIGN 1-3 보기 모드)
   const goPrev = useCallback(() => setStepIndex((i) => Math.max(0, i - 1)), []);
@@ -106,14 +111,19 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
 
       {/* ── 가운데: 정답 / 나 ── */}
       <main className="mx-auto grid w-full max-w-7xl flex-1 gap-4 px-5 py-4 md:grid-cols-2 md:px-8">
-        <TargetPanel step={step} />
+        <TargetPanel step={step} lightweight={mode === "camera"} />
         {mode === "camera" && (
           <MirrorPanel
+            videoRef={videoRef}
             stream={camera.stream}
-            status={camera.status}
-            error={camera.error}
+            cameraStatus={camera.status}
+            cameraError={camera.error}
             onRetry={camera.retry}
             viewModeHref={`/sports/${sport.id}/session?mode=view`}
+            poseStatus={pose.status}
+            fps={pose.fps}
+            people={pose.people}
+            frameRef={pose.frameRef}
           />
         )}
         <MoveInfo
