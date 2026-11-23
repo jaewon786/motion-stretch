@@ -28,6 +28,8 @@ export type StageCanvasProps = {
   interactive?: boolean;
   /** 바닥 발광 원 색 */
   accent?: string;
+  /** 가벼운 모드: 작은 미리보기용. 반사 바닥·후처리·실시간 그림자를 끄고, 바뀔 때만 다시 그린다 */
+  lite?: boolean;
   className?: string;
 };
 
@@ -40,28 +42,32 @@ export default function StageCanvas({
   autoRotate = false,
   interactive = true,
   accent = "#c6ff3d",
+  lite = false,
   className,
 }: StageCanvasProps) {
-  // 기기 성능에 따라 고급 연출을 켜고 끈다
-  const [high, setHigh] = useState(true);
-  const [dpr, setDpr] = useState(1.75);
+  // 기기 성능에 따라 고급 연출을 켜고 끈다 (가벼운 모드는 처음부터 끔)
+  const [high, setHigh] = useState(!lite);
+  const [dpr, setDpr] = useState(lite ? 1.5 : 1.75);
 
   return (
     <div className={className}>
       <Canvas
-        shadows
+        shadows={!lite}
+        frameloop={lite ? "demand" : "always"}
         dpr={[1, dpr]}
         // 팔을 머리 위로 뻗는 동작(옆구리·삼두근)도 손끝까지 보이도록 거리를 둔다
         camera={{ position: [0, 1.2, 4.4], fov: 32, near: 0.1, far: 40 }}
         gl={{ antialias: true, powerPreference: "high-performance" }}
       >
-        <PerformanceMonitor
-          onDecline={() => {
-            setHigh(false);
-            setDpr(1);
-          }}
-          onIncline={() => setDpr(1.75)}
-        />
+        {!lite && (
+          <PerformanceMonitor
+            onDecline={() => {
+              setHigh(false);
+              setDpr(1);
+            }}
+            onIncline={() => setDpr(1.75)}
+          />
+        )}
         <color attach="background" args={[BG]} />
         <fog attach="fog" args={[BG, 6, 15]} />
 
