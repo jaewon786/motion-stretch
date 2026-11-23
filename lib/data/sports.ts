@@ -123,11 +123,12 @@ export const SPORTS: Sport[] = [
         caution: "두 무릎을 나란히 두고, 허리가 뒤로 꺾이지 않게 하세요",
         facing: "side",
         sided: true,
-        // 왼발을 뒤로 접어 왼손으로 발목을 잡고, 오른팔은 옆으로 벌려 균형
+        // 왼발을 뒤로 접고 왼손을 뒤로 뻗어 발목 쪽으로, 오른팔은 옆으로 벌려 균형
+        // (무릎 굽힘은 안전 범위 70% 규칙 때문에 94°까지만 — 손이 발목에 닿기 직전 자세)
         pose: {
           trunkFlex: 0,
           trunkSide: 0,
-          left: { hipFlex: -10, kneeFlex: 94, shoulderFlex: -35, elbowFlex: 20 },
+          left: { hipFlex: -10, kneeFlex: 94, shoulderFlex: -40, elbowFlex: 0 },
           right: { shoulderAbd: 40, elbowFlex: 10 },
         },
         keyJoints: ["kneeL", "hipL"],
