@@ -4,13 +4,24 @@
 // Design Ref: DESIGN 1-3 "동작 정보: 늘어나는 부위·주의사항 · ⚠ 통증이 느껴지면 즉시 멈추세요"
 // PRD 5번 must 1 규칙: 동작마다 "통증이 느껴지면 즉시 멈추세요" 안내를 반드시 보여 준다
 
+import Link from "next/link";
 import type { Step } from "@/lib/data/sports";
 import { PAIN_WARNING } from "@/lib/data/sports";
 import { HOLD_SEC } from "@/lib/config/thresholds";
 import { facingText } from "./TargetPanel";
 import type { SessionMode } from "./SessionView";
 
-export default function MoveInfo({ step }: { step: Step; mode: SessionMode }) {
+/** 보기 모드의 [이전]/[다음] 조작 (카메라 모드에서는 없음) */
+export type ViewNav = {
+  isFirst: boolean;
+  isLast: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+  /** 마지막 단계에서 [끝내기]를 누르면 갈 곳 */
+  doneHref: string;
+};
+
+export default function MoveInfo({ step, nav }: { step: Step; mode: SessionMode; nav?: ViewNav }) {
   const facing = facingText(step);
   return (
     <section aria-label="동작 정보" className="glass flex flex-col rounded-[2rem] p-6 md:p-8">
@@ -57,6 +68,37 @@ export default function MoveInfo({ step }: { step: Step; mode: SessionMode }) {
       >
         <span aria-hidden>⚠️</span> {PAIN_WARNING}
       </p>
+
+      {/* 보기 모드: [이전]/[다음] — 카메라 없이 정답 캐릭터만 보며 동작을 익힌다 (PRD 4번 예외 흐름) */}
+      {nav && (
+        <div className="mt-4 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={nav.onPrev}
+            disabled={nav.isFirst}
+            className="flex-1 rounded-full border border-line px-5 py-3 font-semibold transition hover:border-sky hover:text-sky disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-line disabled:hover:text-text"
+          >
+            ← 이전
+          </button>
+          {nav.isLast ? (
+            <Link
+              href={nav.doneHref}
+              className="flex-1 rounded-full bg-lime px-5 py-3 text-center font-bold text-ink transition hover:brightness-110"
+            >
+              끝내기 ✓
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={nav.onNext}
+              className="flex-1 rounded-full bg-lime px-5 py-3 font-bold text-ink transition hover:brightness-110"
+            >
+              다음 →
+            </button>
+          )}
+        </div>
+      )}
+      {nav && <p className="mt-2 text-center text-xs text-muted">키보드 ← → 로도 넘길 수 있어요</p>}
     </section>
   );
 }
