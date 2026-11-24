@@ -74,7 +74,9 @@ export type SessionEvent =
   /** 탭 숨김(true)·다시 보임(false) */
   | { type: "VISIBILITY"; hidden: boolean }
   /** [건너뛰기] — 이 단계는 미완료로 기록하고 다음 단계로 */
-  | { type: "SKIP" };
+  | { type: "SKIP" }
+  /** 완료 화면의 [다시 하기] — 처음부터 (카메라를 다시 켜고 모델 준비부터) */
+  | { type: "RESET" };
 
 export function initSession(stepCount: number): SessionState {
   return {
@@ -201,6 +203,8 @@ export function sessionReducer(s: SessionState, e: SessionEvent): SessionState {
       return s.paused === e.hidden ? s : { ...s, paused: e.hidden };
     case "SKIP":
       return canSkip(s) ? finishStep(s, false) : s;
+    case "RESET":
+      return initSession(s.stepCount);
   }
 }
 

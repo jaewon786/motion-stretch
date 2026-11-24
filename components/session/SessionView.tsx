@@ -10,6 +10,7 @@ import TargetPanel from "./TargetPanel";
 import MoveInfo from "./MoveInfo";
 import MirrorPanel from "./MirrorPanel";
 import FeedbackBar from "./FeedbackBar";
+import CompletionView from "./CompletionView";
 import { getSport, getSteps, type SportId } from "@/lib/data/sports";
 import { useCamera } from "@/lib/camera/useCamera";
 import { usePoseLandmarker } from "@/lib/pose/usePoseLandmarker";
@@ -99,6 +100,8 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
   }, [flowOn, poseReady, flow.done, frameRef]);
 
   const onSkip = useCallback(() => dispatch({ type: "SKIP" }), []);
+  // [다시 하기]: 처음 단계부터. done이 풀리면 카메라가 다시 켜지고 모델 준비 → orient 순서로 시작한다
+  const onRestart = useCallback(() => dispatch({ type: "RESET" }), []);
 
   // 보기 모드: [이전]/[다음] 버튼과 키보드 ←/→ 로 동작을 넘긴다 (PRD 4번 예외 흐름, DESIGN 1-3 보기 모드)
   const goPrev = useCallback(() => setViewIndex((i) => Math.max(0, i - 1)), []);
@@ -177,11 +180,15 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
         </div>
       </header>
 
-      {/* ── 가운데: 정답 / 나 ── */}
+      {/* ── 마지막 단계 완료: 완료 화면 (카메라는 이미 꺼짐 — DESIGN 1-4, PLAN 작업 14) ── */}
+      {flowOn && flow.done ? (
+        <CompletionView sport={sport} steps={steps} results={flow.results} onRestart={onRestart} />
+      ) : (
+      /* ── 가운데: 정답 / 나 ── */
       <main className="mx-auto grid w-full max-w-7xl flex-1 gap-4 px-5 py-4 md:grid-cols-2 md:px-8">
         {/* 카메라 모드: 서는 방향 안내는 진행 흐름의 orient 상태 동안만 보인다 (DESIGN 2-1) */}
         <TargetPanel step={step} lightweight={flowOn} orientOpen={flowOn ? phase === "orient" : undefined} />
-        {flowOn && !flow.done && (
+        {flowOn && (
           <MirrorPanel
             videoRef={videoRef}
             stream={camera.stream}
@@ -206,7 +213,6 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
             score={comparison?.score ?? null}
             coach={coaching ? coach : null}
             onSkip={onSkip}
-            doneHref={`/sports/${sport.id}`}
           />
         )}
         <MoveInfo
@@ -219,6 +225,7 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
           }
         />
       </main>
+      )}
     </div>
   );
 }

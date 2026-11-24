@@ -7,7 +7,6 @@
 // 디자인: iOS 26 토큰 (.grouped 카드, t-* 글자, 알약 버튼, good/warn/bad 시스템 색)
 
 import Icon from "@/components/ui/Icon";
-import Link from "next/link";
 import { CONFIRM_SEC, HOLD_SEC, ORIENT_SEC, PASS_SCORE } from "@/lib/config/thresholds";
 import type { Step } from "@/lib/data/sports";
 import { canSkip, type SessionPhase, type SessionState } from "@/lib/session/sessionMachine";
@@ -23,8 +22,6 @@ type Props = {
   /** 교정 문구 (작업 13). 자세를 맞추는 중이 아니면 null */
   coach: CoachLine | null;
   onSkip: () => void;
-  /** 끝난 뒤 돌아갈 곳 (완료 화면은 작업 14) */
-  doneHref: string;
 };
 
 /** 남은 초 (올림, 0 아래로 내려가지 않음) */
@@ -103,7 +100,8 @@ function describe(state: SessionState, phase: SessionPhase, step: Step, passing:
   }
 }
 
-export default function FeedbackBar({ state, phase, step, score, coach, onSkip, doneHref }: Props) {
+// 마지막 단계를 마치면(done) 이 막대 대신 CompletionView가 보인다 (작업 14)
+export default function FeedbackBar({ state, phase, step, score, coach, onSkip }: Props) {
   const passing = score !== null && score >= PASS_SCORE;
   const { title, detail, count } = describe(state, phase, step, passing);
   const holdStopped = phase === "holding" && !passing;
@@ -160,11 +158,6 @@ export default function FeedbackBar({ state, phase, step, score, coach, onSkip, 
         <button type="button" onClick={onSkip} className="btn btn-md btn-gray">
           건너뛰기 <Icon name="chevronRight" />
         </button>
-      )}
-      {phase === "done" && (
-        <Link href={doneHref} className="btn btn-md btn-filled">
-          동작 목록으로 <Icon name="chevronRight" />
-        </Link>
       )}
 
       {/* 교정 문구 — 자세를 맞추는 동안 항상 보임 (SC-7). AI 문구인지 기본 문구인지 작게 표시 (DESIGN 1-3) */}
