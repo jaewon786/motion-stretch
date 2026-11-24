@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Icon from "@/components/ui/Icon";
 
 // 한글 글꼴 — Pretendard 가변 글꼴 파일 1개를 앱 안에 넣어 쓴다 (npm 패키지 pretendard, OFL 라이선스)
 // DESIGN 5는 Noto Sans KR(next/font/google)이었지만, 빌드 때 Google Fonts에서 한글 조각 파일 수백 개를 받다가
@@ -12,6 +13,7 @@ const pretendard = localFont({
   display: "swap",
   preload: false, // 파일이 2MB라 미리 불러오지 않고, 그동안은 기본 글꼴로 보여 준다
 });
+
 
 export const metadata: Metadata = {
   // 브라우저 탭 제목과 검색·공유 미리보기에 쓰이는 앱 소개
@@ -27,9 +29,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {/* 좁은 화면(스마트폰) 안내 — PRD 4번 예외 흐름, DESIGN 1-1 (폭 768px 미만에서만 보임) */}
         <div
           role="note"
-          className="sticky top-0 z-50 border-b border-line bg-lime px-4 py-2 text-center text-sm font-medium text-ink md:hidden"
+          className="t-footnote sticky top-0 z-50 flex items-center justify-center gap-2 border-b border-line bg-ink-2/90 px-4 py-2.5 text-muted backdrop-blur-xl md:hidden"
         >
-          📱 PC·노트북 웹캠에서 이용해 주세요. 이 화면에서는 카메라 없이 보기 모드만 쓸 수 있어요.
+          <Icon name="laptop" className="text-text" />
+          PC·노트북 웹캠에서 이용해 주세요. 이 화면에서는 카메라 없이 보기 모드만 쓸 수 있어요.
         </div>
         {children}
       </body>

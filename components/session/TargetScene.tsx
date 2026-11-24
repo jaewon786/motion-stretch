@@ -21,11 +21,18 @@ export function facingYaw(step: Step, mirror: boolean): number {
   return mirror ? -yaw : yaw;
 }
 
-export default function TargetScene({ step }: { step: Step }) {
+/** @param lightweight 카메라 모드에서 true — 자세 인식이 쓸 GPU 여유를 위해 무거운 효과를 끈다 (SC-2) */
+export default function TargetScene({ step, lightweight = false }: { step: Step; lightweight?: boolean }) {
   const points = useMemo(() => solvePose(step.pose), [step]);
   const rings = useMemo(() => Object.fromEntries(step.keyJoints.map((j) => [j, "hint" as const])), [step]);
   return (
-    <StageCanvas className="h-full w-full" mirror yawDeg={facingYaw(step, true)} accent="#38bdf8">
+    <StageCanvas
+      className="h-full w-full"
+      mirror
+      yawDeg={facingYaw(step, true)}
+      accent="#38bdf8"
+      effects={!lightweight}
+    >
       <Mannequin points={points} variant="target" rings={rings} followSpeed={5} />
     </StageCanvas>
   );

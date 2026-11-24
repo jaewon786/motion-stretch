@@ -1,32 +1,88 @@
 @import "tailwindcss";
 
-/* 앱 전체 색 토큰 — Design Ref: DESIGN 1 "야간 경기장" 느낌: 어두운 남색 배경, 반투명 유리 패널, 형광 라임 강조 */
+/*
+ * 디자인 토큰 — iOS 26 디자인 시스템(사용자 제공 피그마 "iOS and iPadOS 26 (Community)")의 다크 모드 값을 그대로 옮김
+ * (파일에서 직접 뽑은 값: Labels / Backgrounds Grouped / Fills / Separators / Colors 스타일)
+ * 기존 토큰 이름(ink, line, muted, lime …)은 다른 화면이 함께 따라오도록 남기고, 값만 iOS 시스템 색으로 바꿨다.
+ *   lime → 강조(tint, iOS systemBlue), sky → 정답(iOS systemCyan)
+ * 3D 장면 안의 색은 그대로 둔다 (사용자 요청: 3D 모션은 유지).
+ */
 :root {
-  --ink: #060a16; /* 가장 어두운 바탕 (3D 무대 배경과 같은 색) */
-  --ink-2: #0b1224; /* 한 단계 밝은 바탕 */
-  --panel: rgba(15, 23, 42, 0.55); /* 유리 패널 */
-  --line: rgba(148, 163, 184, 0.16); /* 얇은 테두리 */
-  --text: #e8eef8;
-  --muted: #94a3b8;
-  --lime: #c6ff3d; /* 강조색 */
-  --sky: #38bdf8; /* 정답 캐릭터 색 */
-  --good: #22c55e; /* 관절 맞음 */
-  --warn: #facc15; /* 조금 어긋남 */
-  --bad: #ef4444; /* 많이 어긋남 */
+  --ink: #000000; /* Backgrounds/Primary - Dark Base */
+  --ink-2: #1c1c1e; /* Backgrounds Grouped/Secondary - Dark Base */
+  --ink-3: #2c2c2e; /* Backgrounds Grouped/Tertiary - Dark Base */
+  --panel: rgba(28, 28, 30, 0.72); /* 반투명 재료 (Materials/Thick 계열) */
+  --line: rgba(84, 84, 88, 0.65); /* Separators/Non-opaque - Dark */
+  --text: #ffffff; /* Labels/Primary - Dark */
+  --muted: rgba(235, 235, 245, 0.6); /* Labels/Secondary - Dark */
+  --steel: rgba(235, 235, 245, 0.3); /* Labels/Tertiary - Dark */
+  --ice: #ffffff;
+  --fill: rgba(118, 118, 128, 0.24); /* Fills/Tertiary - Dark */
+  --fill-2: rgba(120, 120, 128, 0.36); /* Fills/Primary - Dark */
+  --lime: #0a84ff; /* 강조(tint) = Colors/Blue - Dark */
+  --sky: #64d2ff; /* 정답 = Colors/Cyan - Dark */
+  --good: #30d158; /* Colors/Green - Dark */
+  --warn: #ffd60a; /* Colors/Yellow - Dark */
+  --bad: #ff453a; /* Colors/Red - Dark */
 }
 
 @theme inline {
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
   --color-line: var(--line);
   --color-text: var(--text);
   --color-muted: var(--muted);
+  --color-steel: var(--steel);
+  --color-ice: var(--ice);
+  --color-fill: var(--fill);
+  --color-fill-2: var(--fill-2);
   --color-lime: var(--lime);
   --color-sky: var(--sky);
   --color-good: var(--good);
   --color-warn: var(--warn);
   --color-bad: var(--bad);
-  --font-sans: var(--font-noto-kr), system-ui, sans-serif;
+  /* SF Pro는 애플 기기에서는 시스템 글꼴로 바로 쓰이고, 그 밖의 기기에서는 비슷한 Pretendard로 대신한다 */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", var(--font-noto-kr), system-ui, sans-serif;
+  --font-mono: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-noto-kr), system-ui, sans-serif;
+}
+
+/* ── iOS 26 텍스트 스타일 (피그마 Text Styles: 크기/줄 높이/자간 그대로) ── */
+@utility t-xl {
+  font-size: 48px; line-height: 56px; letter-spacing: 0; font-weight: 700; /* XLTitle1 */
+}
+@utility t-large {
+  font-size: 34px; line-height: 41px; letter-spacing: 0.4px; font-weight: 700; /* Large Title/Emphasized */
+}
+@utility t-title1 {
+  font-size: 28px; line-height: 34px; letter-spacing: 0.38px; font-weight: 700;
+}
+@utility t-title2 {
+  font-size: 22px; line-height: 28px; letter-spacing: -0.26px; font-weight: 700;
+}
+@utility t-title3 {
+  font-size: 20px; line-height: 25px; letter-spacing: -0.45px; font-weight: 600;
+}
+@utility t-headline {
+  font-size: 17px; line-height: 22px; letter-spacing: -0.43px; font-weight: 600;
+}
+@utility t-body {
+  font-size: 17px; line-height: 22px; letter-spacing: -0.43px; font-weight: 400;
+}
+@utility t-callout {
+  font-size: 16px; line-height: 21px; letter-spacing: -0.31px; font-weight: 400;
+}
+@utility t-subhead {
+  font-size: 15px; line-height: 20px; letter-spacing: -0.23px; font-weight: 400;
+}
+@utility t-footnote {
+  font-size: 13px; line-height: 18px; letter-spacing: -0.08px; font-weight: 400;
+}
+@utility t-caption {
+  font-size: 12px; line-height: 16px; letter-spacing: 0; font-weight: 400;
+}
+@utility t-caption2 {
+  font-size: 11px; line-height: 13px; letter-spacing: 0.06px; font-weight: 400;
 }
 
 html {
@@ -35,21 +91,68 @@ html {
 
 body {
   color: var(--text);
-  background:
-    radial-gradient(1200px 600px at 85% -10%, rgba(56, 189, 248, 0.14), transparent 60%),
-    radial-gradient(900px 500px at -10% 20%, rgba(198, 255, 61, 0.08), transparent 60%),
-    var(--ink);
-  background-attachment: fixed;
+  background: var(--ink);
   font-family: var(--font-sans);
+  font-feature-settings: "tnum" 0;
+  -webkit-font-smoothing: antialiased;
   word-break: keep-all; /* 한국어 단어가 줄 끝에서 쪼개지지 않게 */
 }
 
-/* 반투명 유리 패널 */
+/* ── 재료(material) ── */
+/* 반투명 유리: 3D 위에 얹는 패널 (iOS 재료 + 피그마 배경 흐림 40~50) */
 .glass {
   background: var(--panel);
-  border: 1px solid var(--line);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+}
+/* 그룹 목록 바탕: 불투명 회색 카드, 모서리 26 (피그마 Grouped List) */
+.grouped {
+  background: var(--ink-2);
+  border-radius: 26px;
+}
+/* Liquid Glass 버튼·막대: 밝은 반투명 + 위쪽 가장자리 빛 */
+.liquid {
+  background: rgba(255, 255, 255, 0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 8px 24px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(50px) saturate(180%);
+  -webkit-backdrop-filter: blur(50px) saturate(180%);
+}
+
+/* ── 버튼: 알약 모양(capsule), 높이 50/44/34 (피그마 Button 크기) ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 9999px;
+  font-size: 17px;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+  font-weight: 600;
+  transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+  white-space: nowrap;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-lg { height: 50px; padding: 0 22px; }
+.btn-md { height: 44px; padding: 0 18px; }
+.btn-sm { height: 34px; padding: 0 14px; font-size: 15px; letter-spacing: -0.23px; }
+.btn-filled { background: var(--lime); color: #fff; }
+.btn-filled:hover { opacity: 0.88; }
+.btn-gray { background: var(--fill); color: var(--lime); }
+.btn-gray:hover { background: var(--fill-2); }
+.btn-glass { color: #fff; }
+.btn:disabled { opacity: 0.35; pointer-events: none; }
+
+/* 예전 HUD 라벨 → iOS 보조 설명 글자 (Footnote, 보조 색) */
+.hud-label {
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.08px;
+  color: var(--muted);
 }
 
 /* 키보드로 이동할 때 초점 표시 (접근성) */
