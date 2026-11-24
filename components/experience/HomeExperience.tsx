@@ -36,7 +36,10 @@ function sampleKeys(p: number, wide: boolean, outPos: THREE.Vector3, outLook: TH
   outPos.set(...a.pos).lerp(new THREE.Vector3(...b.pos), t);
   outLook.set(...a.look).lerp(new THREE.Vector3(...b.look), t);
   // 좁은 화면(세로로 긴 휴대폰 등)에서는 선수를 가운데에 둔다
-  if (!wide) outLook.x *= 0.15;
+  if (!wide) {
+    outLook.x *= 0.15;
+    outLook.y += 0.6; // 좁은 화면: 카메라가 위를 보게 해 선수를 글 아래쪽으로 내린다 (글 가독성)
+  }
 }
 
 /** 스크롤·마우스를 따라 부드럽게 움직이는 카메라 */
@@ -157,15 +160,15 @@ export default function HomeExperience() {
             className="group absolute left-0 top-0 opacity-0 will-change-transform"
           >
             <div className="flex translate-x-5 -translate-y-9 items-center gap-2 whitespace-nowrap group-data-[flip=1]:-translate-x-[calc(100%+1.25rem)] group-data-[flip=1]:flex-row-reverse">
-              <span className="h-px w-8 bg-lime/70" />
-              <span className="rounded-sm border border-lime/40 bg-ink/70 px-2 py-1 font-mono text-[11px] tracking-widest text-lime">
+              <span className="h-px w-8 bg-white/60" />
+              <span className="liquid t-caption rounded-full px-2.5 py-1 font-semibold text-text">
                 <span
                   ref={(e) => {
                     hud.jointCodes[i] = e;
                   }}
                 />
                 <span
-                  className="ml-2 tabular-nums text-ice"
+                  className="ml-1.5 tabular-nums text-good"
                   ref={(e) => {
                     hud.jointVals[i] = e;
                   }}
@@ -180,9 +183,9 @@ export default function HomeExperience() {
             ref={(d) => {
               hud.cores[i] = d;
             }}
-            className="absolute left-0 top-0 whitespace-nowrap font-mono text-[10px] tracking-[0.25em] text-steel opacity-0 will-change-transform data-[hovered=1]:text-lime"
+            className="t-caption2 absolute left-0 top-0 whitespace-nowrap font-semibold text-muted opacity-0 will-change-transform data-[hovered=1]:text-lime"
           >
-            {String(i + 1).padStart(2, "0")} · {s.id.toUpperCase()}
+            {s.name}
           </div>
         ))}
       </div>

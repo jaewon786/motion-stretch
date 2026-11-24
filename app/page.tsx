@@ -1,39 +1,40 @@
-// 첫 화면 — 스크롤하면 뒤의 3D 모션 랩을 카메라가 지나가는 3막 구성 + 종목 선택
-// Design Ref: immersive-design 설계 1번 / DESIGN 1-1 / PLAN 작업 3
+// 첫 화면 — 뒤의 3D 모션 랩을 스크롤로 지나가는 3막 구성 + 종목 선택
+// 디자인: iOS 26 디자인 시스템(사용자 제공 피그마) — SF 글꼴 크기 체계, 그룹 목록(모서리 26), 알약 버튼, Liquid Glass
 // Plan SC: SC-5 (종목 카드 클릭이 시작까지의 1번째 클릭) — 카드·버튼은 모두 HTML이라 클릭·키보드·화면 낭독기 그대로
 
 import SiteHeader from "@/components/ui/SiteHeader";
+import Icon from "@/components/ui/Icon";
 import SportCard from "@/components/home/SportCard";
 import ExperienceStage from "@/components/experience/ExperienceStage";
 import BootIntro from "@/components/experience/BootIntro";
 import { SPORTS } from "@/lib/data/sports";
-import { GREEN_DEG, HOLD_SEC, PASS_SCORE } from "@/lib/config/thresholds";
+import { GREEN_DEG, HOLD_SEC, PASS_SCORE, YELLOW_DEG } from "@/lib/config/thresholds";
 
 const HOW_TO = [
-  { n: "01", title: "종목 고르기", desc: "축구·러닝·농구·테니스 중 오늘 할 운동을 골라요." },
-  { n: "02", title: "카메라 앞에 서기", desc: "머리부터 발끝까지 화면에 들어오게 2~3m 물러서요." },
-  { n: "03", title: "정답 자세 따라 하기", desc: `관절이 모두 초록이 되면 ${HOLD_SEC}초만 버티면 끝!` },
+  { title: "종목 고르기", desc: "축구·러닝·농구·테니스 중 오늘 할 운동을 골라요." },
+  { title: "카메라 앞에 서기", desc: "머리부터 발끝까지 화면에 들어오게 2~3m 물러서요." },
+  { title: "정답 자세 따라 하기", desc: `관절이 모두 초록이 되면 ${HOLD_SEC}초만 버티면 끝나요.` },
 ];
 
-/** 각 막의 글 상자: 3D 위에서도 읽히도록 어두운 반투명 바탕 */
-function ActCopy({
-  code,
+/** 각 막의 설명 카드 (3D 위의 반투명 유리) */
+function ActCard({
+  step,
   title,
   body,
   align = "left",
   children,
 }: {
-  code: string;
+  step: string;
   title: string;
   body: string;
   align?: "left" | "right";
   children?: React.ReactNode;
 }) {
   return (
-    <div className={`glass bracket w-full max-w-md rounded-2xl p-6 md:p-8 ${align === "right" ? "md:ml-auto" : ""}`}>
-      <p className="hud-label text-sky">{code}</p>
-      <h2 className="mt-3 text-3xl font-black leading-tight tracking-tight text-ice md:text-4xl">{title}</h2>
-      <p className="mt-4 text-base leading-7 text-muted">{body}</p>
+    <div className={`glass w-full max-w-md rounded-[26px] p-6 md:p-7 ${align === "right" ? "md:ml-auto" : ""}`}>
+      <p className="t-footnote font-semibold text-sky">{step}</p>
+      <h2 className="t-title1 mt-1.5 text-text">{title}</h2>
+      <p className="t-body mt-3 text-muted">{body}</p>
       {children}
     </div>
   );
@@ -50,112 +51,103 @@ export default function Home() {
         <SiteHeader />
 
         <main className="mx-auto w-full max-w-6xl px-5 md:px-8">
-          {/* ── 1막 HERO ── */}
-          <section className="flex min-h-[calc(100svh-5rem)] flex-col justify-center pb-10">
+          {/* ── 1막: 소개 ── */}
+          <section className="flex min-h-[calc(100svh-6rem)] flex-col justify-center pb-10">
             <div className="max-w-xl">
-              <p className="hud-label flex items-center gap-2 text-lime">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-lime" aria-hidden />
-                Sports-tech · Pose Lab
-              </p>
-              <h1 className="mt-5 text-6xl font-black leading-[0.95] tracking-tight text-ice md:text-8xl">
-                모션
+              <p className="t-subhead font-semibold text-lime">운동 전 자세 코치</p>
+              <h1 className="t-large mt-2 text-text md:text-[56px] md:leading-[64px] md:tracking-[-0.5px]">
+                종목에 맞는 스트레칭,
                 <br />
-                스트레치
+                정확한 자세로.
               </h1>
-              <p className="mt-6 text-xl font-bold leading-snug text-text/90 md:text-2xl">
-                종목에 맞는 스트레칭,{" "}
-                <span className="bg-gradient-to-r from-lime to-sky bg-clip-text text-transparent">정확한 자세로.</span>
-              </p>
-              <p className="mt-4 max-w-md text-base leading-7 text-muted">
+              <p className="t-body mt-4 max-w-md text-muted md:text-[19px] md:leading-[26px]">
                 카메라가 내 몸을 관절 점으로 읽고, 3D 코치의 정답 각도와 비교해 어디를 고칠지 바로 알려 줍니다.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <a
-                  href="#sports"
-                  className="inline-flex items-center gap-2 rounded-full bg-lime px-6 py-3 font-bold text-ink shadow-[0_10px_40px_-10px_rgba(198,255,61,0.6)] transition hover:brightness-110"
-                >
-                  종목 고르기 <span aria-hidden>↓</span>
+                <a href="#sports" className="btn btn-lg btn-filled">
+                  종목 고르기
                 </a>
-                <a
-                  href="#scan"
-                  className="inline-flex items-center gap-2 rounded-full border border-line bg-ink/40 px-6 py-3 font-semibold text-text backdrop-blur transition hover:border-sky hover:text-sky"
-                >
+                <a href="#scan" className="btn btn-lg btn-glass liquid">
                   작동 원리 보기
                 </a>
               </div>
             </div>
 
-            {/* 오른쪽 아래: HUD 판독값 */}
-            <dl className="mt-14 grid max-w-md grid-cols-3 gap-3 font-mono text-[11px] uppercase tracking-wider md:ml-auto md:mt-auto">
+            {/* 핵심 수치 — Liquid Glass 막대 */}
+            <dl className="liquid t-footnote mt-14 inline-flex w-fit flex-wrap items-center gap-x-5 gap-y-1 self-start rounded-full px-5 py-2.5 md:ml-auto md:mt-auto md:self-end">
               {[
-                ["scan", "live"],
-                ["joints", "33"],
-                ["tolerance", `±${GREEN_DEG}°`],
+                ["인식 관절", "33개"],
+                ["허용 오차", `±${GREEN_DEG}°`],
+                ["유지 시간", `${HOLD_SEC}초`],
               ].map(([k, v]) => (
-                <div key={k} className="border-l border-line pl-3">
-                  <dt className="text-steel">{k}</dt>
-                  <dd className="mt-1 text-lg text-ice">{v}</dd>
+                <div key={k} className="flex items-baseline gap-1.5">
+                  <dt className="text-muted">{k}</dt>
+                  <dd className="font-semibold tabular-nums text-text">{v}</dd>
                 </div>
               ))}
             </dl>
-            <p className="hud-label mt-8 animate-bounce text-center md:mt-10" aria-hidden>
-              scroll ↓
-            </p>
+            <a href="#scan" className="t-footnote mt-8 flex items-center justify-center gap-1 text-muted md:mt-10">
+              스크롤해서 살펴보기 <Icon name="chevronDown" />
+            </a>
           </section>
 
-          {/* ── 2막 SCAN ── */}
+          {/* ── 2막: 스캔 ── */}
           <section id="scan" className="flex min-h-[100svh] items-center py-20">
-            <ActCopy
+            <ActCard
               align="right"
-              code="01 / scan"
+              step="1단계 · 스캔"
               title="몸을 관절 33개로 읽어요"
               body="브라우저 안의 자세 인식 AI가 웹캠 영상에서 어깨·팔꿈치·엉덩이·무릎·발목 위치를 1초에 20번 넘게 찾아냅니다. 영상은 이 기기 밖으로 나가지 않아요."
             />
           </section>
 
-          {/* ── 3막 COMPARE ── */}
+          {/* ── 3막: 비교 ── */}
           <section className="flex min-h-[100svh] items-center py-20">
-            <ActCopy
-              code="02 / compare"
+            <ActCard
+              step="2단계 · 비교"
               title={`정답 각도와 ±${GREEN_DEG}°`}
-              body={`종목마다 늘려야 할 핵심 관절의 각도를 정답과 비교해 초록·노랑·빨강으로 보여 줘요. 일치도 ${PASS_SCORE}%를 넘기면 자세 확인, ${HOLD_SEC}초를 버티면 다음 동작으로 넘어가요.`}
+              body={`늘려야 할 핵심 관절의 각도를 정답과 비교해 색으로 보여 줘요. 일치도 ${PASS_SCORE}%를 넘기면 자세 확인, ${HOLD_SEC}초를 버티면 다음 동작으로 넘어가요.`}
             >
-              <ul className="mt-6 grid grid-cols-3 gap-2 font-mono text-[11px] uppercase tracking-wider">
-                <li className="rounded-md border border-good/40 bg-good/10 px-2 py-2 text-good">≤ {GREEN_DEG}° ok</li>
-                <li className="rounded-md border border-warn/40 bg-warn/10 px-2 py-2 text-warn">≤ 30° near</li>
-                <li className="rounded-md border border-bad/40 bg-bad/10 px-2 py-2 text-red-300">&gt; 30° fix</li>
+              <ul className="t-footnote mt-5 overflow-hidden rounded-2xl bg-fill">
+                {[
+                  ["bg-good", "맞음", `±${GREEN_DEG}° 안`],
+                  ["bg-warn", "조금 어긋남", `±${YELLOW_DEG}° 안`],
+                  ["bg-bad", "많이 어긋남", `${YELLOW_DEG}° 넘음`],
+                ].map(([dot, label, range], i) => (
+                  <li key={label} className={`flex items-center gap-3 px-4 py-2.5 ${i ? "border-t border-line" : ""}`}>
+                    <span className={`h-2.5 w-2.5 rounded-full ${dot}`} aria-hidden />
+                    <span className="flex-1 text-text">{label}</span>
+                    <span className="tabular-nums text-muted">{range}</span>
+                  </li>
+                ))}
               </ul>
-            </ActCopy>
+            </ActCard>
           </section>
 
-          {/* ── 4막 CHOOSE: 종목 선택 ── */}
-          <section id="sports" className="scroll-mt-6 pb-10 pt-24">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="hud-label text-sky">03 / choose</p>
-                <h2 className="mt-3 text-4xl font-black tracking-tight text-ice md:text-5xl">종목을 고르세요</h2>
-                <p className="mt-3 text-muted">종목마다 많이 쓰는 근육을 늘리는 서서 하는 스트레칭 3가지를 준비했어요.</p>
-              </div>
-              <p className="hud-label hidden md:block">hover → 3d core</p>
-            </div>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {SPORTS.map((sport, i) => (
-                <SportCard key={sport.id} sport={sport} index={i} />
+          {/* ── 4막: 종목 선택 ── */}
+          <section id="sports" className="scroll-mt-24 pb-10 pt-24">
+            <p className="t-footnote font-semibold text-sky">3단계 · 선택</p>
+            <h2 className="t-large mt-1 text-text">종목을 고르세요</h2>
+            <p className="t-body mt-2 text-muted">종목마다 많이 쓰는 근육을 늘리는 서서 하는 스트레칭 3가지를 준비했어요.</p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {SPORTS.map((sport) => (
+                <SportCard key={sport.id} sport={sport} />
               ))}
             </div>
           </section>
 
-          {/* ── 이용 방법 ── */}
-          <section className="pt-20">
-            <p className="hud-label">protocol</p>
-            <h2 className="mt-2 text-2xl font-black tracking-tight text-ice">이렇게 진행돼요</h2>
-            <ol className="mt-6 grid gap-4 md:grid-cols-3">
-              {HOW_TO.map((s) => (
-                <li key={s.n} className="glass bracket flex gap-4 rounded-2xl p-5">
-                  <span className="font-mono text-2xl font-light text-lime">{s.n}</span>
-                  <div>
-                    <div className="font-bold text-ice">{s.title}</div>
-                    <p className="mt-1 text-sm leading-6 text-muted">{s.desc}</p>
+          {/* ── 이용 방법: iOS 그룹 목록 ── */}
+          <section className="pt-16">
+            <h2 className="t-title2 text-text">이렇게 진행돼요</h2>
+            <ol className="glass mt-4 overflow-hidden rounded-[26px]">
+              {HOW_TO.map((s, i) => (
+                <li key={s.title} className="flex items-start gap-4 px-5 py-4">
+                  <span className="t-subhead flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-lime font-semibold text-white">
+                    {i + 1}
+                  </span>
+                  <div className={`flex-1 ${i ? "" : ""}`}>
+                    <div className="t-headline text-text">{s.title}</div>
+                    <p className="t-subhead mt-0.5 text-muted">{s.desc}</p>
                   </div>
                 </li>
               ))}
@@ -163,29 +155,28 @@ export default function Home() {
           </section>
 
           {/* ── 안전·개인정보 안내 (PRD 7번 안전 고지) ── */}
-          <section className="mb-16 mt-16 grid gap-3 md:grid-cols-2">
-            <p className="glass flex items-start gap-3 rounded-2xl p-4 text-sm leading-6 text-muted">
-              <span aria-hidden className="text-lg">
-                ⓘ
-              </span>
-              <span>
-                <strong className="text-text">의료 기기가 아니며 부상 진단을 하지 않습니다.</strong> 통증이 느껴지면 즉시
-                멈추고, 부상이 있다면 전문가와 상담하세요.
-              </span>
-            </p>
-            <p className="glass flex items-start gap-3 rounded-2xl p-4 text-sm leading-6 text-muted">
-              <span aria-hidden className="text-lg">
-                🔒
-              </span>
-              <span>
-                <strong className="text-text">카메라 영상은 이 기기 밖으로 나가지 않습니다.</strong> 교정 문구를 만들 때
-                관절 각도 숫자만 AI에 보내고, 아무것도 저장하지 않아요.
-              </span>
-            </p>
+          <section className="mb-16 mt-8">
+            <ul className="glass overflow-hidden rounded-[26px]">
+              <li className="flex items-start gap-3 px-5 py-4">
+                <Icon name="info" className="mt-0.5 text-[20px] text-sky" />
+                <p className="t-subhead text-muted">
+                  <span className="font-semibold text-text">의료 기기가 아니며 부상 진단을 하지 않습니다.</span> 통증이
+                  느껴지면 즉시 멈추고, 부상이 있다면 전문가와 상담하세요.
+                </p>
+              </li>
+              <li className="ml-14 border-t border-line" aria-hidden />
+              <li className="flex items-start gap-3 px-5 py-4">
+                <Icon name="lock" className="mt-0.5 text-[20px] text-sky" />
+                <p className="t-subhead text-muted">
+                  <span className="font-semibold text-text">카메라 영상은 이 기기 밖으로 나가지 않습니다.</span> 교정 문구를
+                  만들 때 관절 각도 숫자만 AI에 보내고, 아무것도 저장하지 않아요.
+                </p>
+              </li>
+            </ul>
           </section>
         </main>
-        <footer className="border-t border-line bg-ink/60 py-6 text-center backdrop-blur">
-          <p className="hud-label">© 2026 Motion·Stretch — pre-workout pose lab</p>
+        <footer className="t-footnote border-t border-line bg-ink/70 py-6 text-center text-muted backdrop-blur-xl">
+          © 2026 모션 스트레치 · 운동 전 부상 예방을 위한 스트레칭 코치
         </footer>
       </div>
     </>

@@ -4,6 +4,7 @@
 // Design Ref: DESIGN 7 예외 처리 표, DESIGN 1-3 "카메라를 켜기 직전 PRD 7번 안내 문구를 확인 버튼 없이 보여 준다 (SC-5)"
 // PRD 4번 예외 흐름: 카메라 거부 → 이유와 다시 허용 방법 / 카메라 없음·사용 중 → 원인별 안내 + 보기 모드로 진행
 
+import Icon from "@/components/ui/Icon";
 import Link from "next/link";
 import type { CameraErrorKind, CameraStatus } from "@/lib/camera/useCamera";
 
@@ -16,7 +17,7 @@ const ERROR_TEXT: Record<CameraErrorKind, { title: string; body: string; steps?:
     title: "카메라 사용이 허용되지 않았어요",
     body: "내 자세를 정답과 비교하려면 카메라가 필요해요. 영상은 이 기기 안에서만 쓰이고 저장되지 않아요.",
     steps: [
-      "주소창 왼쪽의 자물쇠(🔒) 또는 설정 아이콘을 누르세요",
+      "주소창 왼쪽의 자물쇠 또는 설정 아이콘을 누르세요",
       "카메라를 '허용'으로 바꾸세요",
       "아래 [다시 시도]를 누르세요",
     ],
@@ -60,8 +61,8 @@ export default function CameraGate({
           <span className="mx-auto block h-12 w-12 animate-spin rounded-full border-2 border-line border-t-lime" aria-hidden />
           <p className="mt-5 text-lg font-bold">카메라를 켜는 중이에요</p>
           <p className="mt-1 text-sm text-muted">브라우저 위쪽 알림에서 [허용]을 눌러 주세요.</p>
-          <p className="mt-5 rounded-2xl border border-lime/25 bg-lime/10 px-4 py-3 text-sm leading-6 text-lime">
-            <span aria-hidden>🔒 </span>
+          <p className="mt-5 rounded-2xl bg-fill px-4 py-3 text-sm leading-6 text-text">
+            <Icon name="lock" className="mr-1" />
             {CAMERA_PRIVACY_NOTICE}
           </p>
         </div>
@@ -73,9 +74,7 @@ export default function CameraGate({
   return (
     <div role="alert" className="absolute inset-0 flex items-center justify-center bg-ink/90 p-6 backdrop-blur-sm">
       <div className="max-w-md">
-        <div className="text-4xl" aria-hidden>
-          📷
-        </div>
+        <Icon name="camera" className="text-4xl text-muted" />
         <h3 className="mt-3 text-xl font-black">{text.title}</h3>
         <p className="mt-2 text-sm leading-6 text-muted">{text.body}</p>
         {text.steps && (
@@ -95,16 +94,16 @@ export default function CameraGate({
             <button
               type="button"
               onClick={onRetry}
-              className="rounded-full bg-lime px-5 py-2.5 font-bold text-ink transition hover:brightness-110"
+              className="btn btn-md btn-filled"
             >
               다시 시도
             </button>
           )}
           <Link
             href={viewModeHref}
-            className="rounded-full border border-line px-5 py-2.5 font-semibold transition hover:border-sky hover:text-sky"
+            className="btn btn-md btn-gray"
           >
-            👀 보기 모드로 (카메라 없이)
+            <Icon name="eye" /> 보기 모드로 (카메라 없이)
           </Link>
         </div>
       </div>

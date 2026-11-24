@@ -54,7 +54,7 @@ export default function PoseLab() {
             }}
             className={`rounded-full px-4 py-1.5 text-sm ${i === sportIdx ? "bg-lime-300 text-slate-900" : "bg-slate-800"}`}
           >
-            {s.emoji} {s.name}
+            {s.name}
           </button>
         ))}
       </div>

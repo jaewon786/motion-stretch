@@ -59,23 +59,25 @@ export default function BootIntro() {
   return (
     <div
       role="status"
-      aria-label="센서 보정 중"
+      aria-label="준비 중"
       className={`fixed inset-0 z-[80] flex items-center justify-center bg-ink transition-opacity duration-700 ${
         phase === "out" ? "pointer-events-none opacity-0" : "opacity-100"
       }`}
     >
-      <div className="w-72">
-        <div className="flex items-end justify-between">
-          <span className="hud-label">Motion·Stretch / Pose Lab</span>
-          <span className="font-mono text-4xl font-light tabular-nums text-ice">
-            <span ref={numRef}>000</span>
-            <span className="text-steel">%</span>
-          </span>
+      <div className="flex w-64 flex-col items-center text-center">
+        <span className="flex h-16 w-16 items-center justify-center rounded-[18px] bg-lime text-white shadow-[0_10px_30px_rgba(10,132,255,0.35)]">
+          <svg viewBox="0 0 24 24" className="h-9 w-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden>
+            <circle cx="12" cy="4.5" r="2" fill="currentColor" stroke="none" />
+            <path d="M5 9.5l7 1.5 7-3.5M12 11v5l-3.5 5M12 16l4 4.5" />
+          </svg>
+        </span>
+        <p className="t-title3 mt-5 text-text">모션 스트레치</p>
+        <p className="t-footnote mt-1 text-muted">
+          센서 준비 중 <span ref={numRef} className="tabular-nums">000</span>%
+        </p>
+        <div className="mt-4 h-1 w-40 overflow-hidden rounded-full bg-fill">
+          <span ref={barRef} className="block h-full w-full origin-left scale-x-0 rounded-full bg-lime" />
         </div>
-        <div className="mt-3 h-px w-full bg-line">
-          <span ref={barRef} className="block h-px w-full origin-left scale-x-0 bg-lime" />
-        </div>
-        <p className="mt-3 hud-label">Calibrating sensors · 33 joints</p>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@
 // PLAN 작업 7~9: 큰 화면에는 내 동작을 거울처럼 따라 하는 3D 마네킹, 오른쪽 아래에는 작은 카메라 미리보기(관절 점 포함).
 // 영상은 <video>에 그리기만 하고 서버로 보내거나 저장·캡처하지 않는다 (PRD 7번, SC-6).
 
+import Icon from "@/components/ui/Icon";
 import dynamic from "next/dynamic";
 import { useEffect, type RefObject } from "react";
 import CameraGate from "./CameraGate";
@@ -66,7 +67,7 @@ export default function MirrorPanel({
   return (
     <section
       aria-label="내 자세"
-      className="glass bracket relative min-h-[420px] overflow-hidden rounded-[2rem] bg-ink md:min-h-[560px]"
+      className="grouped relative min-h-[420px] overflow-hidden bg-ink-2 md:min-h-[560px]"
     >
       {/* 큰 화면: 내 동작을 거울처럼 따라 하는 3D 마네킹 (자세 인식이 준비된 뒤에 그린다) */}
       {poseStatus === "ready" && (
@@ -124,7 +125,7 @@ export default function MirrorPanel({
       {/* 여러 사람이 잡힘: 가운데 가장 크게 잡힌 한 명만 인식 (PRD 4번 예외 흐름) */}
       {poseStatus === "ready" && people > 1 && (
         <span className="pointer-events-none absolute bottom-4 left-4 max-w-[55%] rounded-full bg-ink/75 px-3 py-1.5 text-xs text-text ring-1 ring-line">
-          👥 {people}명이 보여요 · 가운데 한 명만 인식해요
+          <Icon name="people" /> {people}명이 보여요 · 가운데 한 명만 인식해요
         </span>
       )}
 

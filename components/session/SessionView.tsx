@@ -3,6 +3,7 @@
 // 스트레칭 화면 전체 조립 — 위 진행 막대, 왼쪽 정답 캐릭터, 오른쪽 내 캐릭터 자리(작업 7~9) / 동작 설명, 아래 정보 막대
 // Design Ref: DESIGN 1-3, DESIGN 6 (SessionView)
 
+import Icon, { SportIcon } from "@/components/ui/Icon";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import TargetPanel from "./TargetPanel";
@@ -56,16 +57,16 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-x-6 gap-y-3 px-5 py-3 md:px-8">
           <Link
             href={`/sports/${sport.id}`}
-            className="flex items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-sm text-muted transition hover:text-text"
+            className="btn btn-sm btn-gray"
           >
-            <span aria-hidden>←</span> 나가기
+            <Icon name="chevronLeft" /> 나가기
           </Link>
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2 text-sm">
               <span className="text-muted">
-                {sport.emoji} {sport.name}
+                <SportIcon id={sport.id} /> {sport.name}
               </span>
-              <span className="font-mono font-bold tabular-nums text-lime">
+              <span className="font-semibold tabular-nums text-lime">
                 {stepIndex + 1}/{steps.length}
               </span>
               <span className="truncate font-semibold">
@@ -101,13 +102,13 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
             </span>
           ) : (
             <span
-              className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+              className={`t-footnote flex items-center gap-1.5 rounded-full px-3 py-1.5 font-semibold ${
                 mode === "camera"
                   ? "bg-lime/15 text-lime ring-1 ring-lime/30"
                   : "bg-sky/15 text-sky ring-1 ring-sky/30"
               }`}
             >
-              {mode === "camera" ? "📷 카메라 모드" : "👀 보기 모드"}
+              <Icon name={mode === "camera" ? "camera" : "eye"} /> {mode === "camera" ? "카메라 모드" : "보기 모드"}
             </span>
           )}
         </div>

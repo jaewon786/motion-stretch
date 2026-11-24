@@ -38,7 +38,6 @@ export type Move = {
 export type Sport = {
   id: SportId;
   name: string;
-  emoji: string;
   /** 종목 카드에 쓰는 한 줄 설명 */
   summary: string;
   moves: Move[];
@@ -114,7 +113,6 @@ export const SPORTS: Sport[] = [
   {
     id: "soccer",
     name: "축구",
-    emoji: "⚽",
     summary: "킥과 방향 전환에 쓰는 허벅지 앞·뒤·안쪽",
     moves: [
       {
@@ -171,7 +169,6 @@ export const SPORTS: Sport[] = [
   {
     id: "running",
     name: "러닝",
-    emoji: "🏃",
     summary: "착지와 보폭을 받쳐 주는 종아리·고관절·엉덩이",
     moves: [
       {
@@ -227,7 +224,6 @@ export const SPORTS: Sport[] = [
   {
     id: "basketball",
     name: "농구",
-    emoji: "🏀",
     summary: "점프·리바운드에 쓰는 옆구리·하체·어깨",
     moves: [
       {
@@ -283,7 +279,6 @@ export const SPORTS: Sport[] = [
   {
     id: "tennis",
     name: "테니스",
-    emoji: "🎾",
     summary: "스윙과 서브에 쓰는 팔·가슴·손목",
     moves: [
       {

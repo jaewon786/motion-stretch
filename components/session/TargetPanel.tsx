@@ -4,6 +4,7 @@
 // Design Ref: DESIGN 1-3 "정답(왼쪽) · 드래그로 돌려 보기 · ↻ 서는 방향", 안내 겹 화면 "서는 방향 안내(동작 시작 전 3초)"
 // PRD 4번 이용 흐름: "동작마다 서는 방향(정면/옆) 안내 확인"
 
+import Icon, { type IconName } from "@/components/ui/Icon";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import type { Step } from "@/lib/data/sports";
@@ -19,16 +20,16 @@ const TargetScene = dynamic(() => import("./TargetScene"), {
 });
 
 /** 서는 방향 안내 문구 */
-export function facingText(step: Step): { icon: string; title: string; detail: string } {
+export function facingText(step: Step): { icon: IconName; title: string; detail: string } {
   const sideName = step.side === "right" ? "오른쪽" : "왼쪽";
   if (step.move.facing === "side") {
     return {
-      icon: "↻",
+      icon: "rotate",
       title: "옆으로 서기",
       detail: `${sideName} 몸이 카메라를 향하게 옆으로 서세요`,
     };
   }
-  return { icon: "⬆", title: "정면으로 서기", detail: "카메라를 정면으로 바라보고 서세요" };
+  return { icon: "arrowUp", title: "정면으로 서기", detail: "카메라를 정면으로 바라보고 서세요" };
 }
 
 export default function TargetPanel({ step, lightweight = false }: { step: Step; lightweight?: boolean }) {
@@ -46,7 +47,7 @@ export default function TargetPanel({ step, lightweight = false }: { step: Step;
   return (
     <section
       aria-label="정답 자세"
-      className="glass bracket relative min-h-[420px] overflow-hidden rounded-[2rem] md:min-h-[560px]"
+      className="grouped relative min-h-[420px] overflow-hidden  md:min-h-[560px]"
     >
       <TargetScene step={step} lightweight={lightweight} />
 
@@ -56,11 +57,11 @@ export default function TargetPanel({ step, lightweight = false }: { step: Step;
       </span>
       {/* 오른쪽 위: 서는 방향 배지 (항상 보임) */}
       <span className="pointer-events-none absolute right-4 top-4 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-text ring-1 ring-line">
-        <span aria-hidden>{facing.icon}</span> {facing.title}
+        <Icon name={facing.icon} /> {facing.title}
       </span>
       {/* 아래: 돌려 보기 도움말 */}
       <span className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink/60 px-3 py-1 text-xs text-muted">
-        🖱️ 드래그해서 돌려 보기 · 휠로 확대
+        <Icon name="hand" /> 드래그해서 돌려 보기 · 휠로 확대
       </span>
 
       {/* 서는 방향 안내 (단계 시작 후 3초) */}
@@ -69,10 +70,8 @@ export default function TargetPanel({ step, lightweight = false }: { step: Step;
           role="status"
           className="pointer-events-none absolute inset-x-6 top-1/2 -translate-y-1/2 rounded-3xl bg-ink/75 p-6 text-center ring-1 ring-sky/40 backdrop-blur-md"
         >
-          <div className="text-5xl text-sky" aria-hidden>
-            {facing.icon}
-          </div>
-          <div className="mt-2 text-2xl font-black">{facing.title}</div>
+          <Icon name={facing.icon} className="mx-auto text-5xl text-sky" />
+          <div className="t-title2 mt-2">{facing.title}</div>
           <p className="mt-1 text-sm text-muted">{facing.detail}</p>
         </div>
       )}
