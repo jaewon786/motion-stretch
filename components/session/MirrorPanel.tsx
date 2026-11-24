@@ -33,7 +33,15 @@ export type MirrorPanelProps = {
   frameRef: RefObject<PoseFrame | null>;
   /** 정답과 비교한 결과 (작업 10). 사람이 안 보이면 null */
   comparison: CompareResult | null;
+  /** 진행 흐름 안내 (작업 11): 몸 이탈 → "한 걸음 뒤로", 어두움 → "밝은 곳에서" (DESIGN 1-3 안내 겹 화면) */
+  notice?: "outOfFrame" | "lowLight" | null;
 };
+
+/** 안내 겹 화면 문구 (DESIGN 1-3, DESIGN 7) */
+const NOTICE_TEXT = {
+  outOfFrame: { title: "한 걸음 뒤로 물러나 주세요", body: "머리부터 발목까지 화면에 들어오면 이어서 셉니다" },
+  lowLight: { title: "밝은 곳에서, 창문을 등지지 마세요", body: "조명이 어두우면 자세를 정확히 읽기 어려워요" },
+} as const;
 
 export default function MirrorPanel({
   videoRef,
@@ -47,6 +55,7 @@ export default function MirrorPanel({
   people,
   frameRef,
   comparison,
+  notice = null,
 }: MirrorPanelProps) {
   // 스트림이 바뀌면 <video>에 연결한다
   useEffect(() => {
@@ -119,6 +128,18 @@ export default function MirrorPanel({
               일치도 {Math.round(score)}%
             </span>
           )}
+        </div>
+      )}
+
+      {/* 진행 흐름 안내: 몸 이탈·어두움 (작업 11) — 뒤의 3D 마네킹이 비쳐 글자가 묻히지 않게 다른 안내 겹 화면처럼 거의 불투명하게 */}
+      {poseStatus === "ready" && notice && (
+        <div
+          role="alert"
+          className="pointer-events-none absolute inset-x-6 top-1/2 -translate-y-1/2 rounded-3xl bg-ink/85 p-6 text-center ring-1 ring-warn/40 backdrop-blur-md"
+        >
+          <Icon name={notice === "outOfFrame" ? "people" : "bulb"} className="mx-auto text-4xl text-warn" />
+          <p className="t-title3 mt-2">{NOTICE_TEXT[notice].title}</p>
+          <p className="t-footnote mt-1 text-muted">{NOTICE_TEXT[notice].body}</p>
         </div>
       )}
 

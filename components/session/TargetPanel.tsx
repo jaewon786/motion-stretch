@@ -6,7 +6,7 @@
 
 import Icon, { type IconName } from "@/components/ui/Icon";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import type { Step } from "@/lib/data/sports";
 import { ORIENT_SEC } from "@/lib/config/thresholds";
 
@@ -32,7 +32,16 @@ export function facingText(step: Step): { icon: IconName; title: string; detail:
   return { icon: "arrowUp", title: "정면으로 서기", detail: "카메라를 정면으로 바라보고 서세요" };
 }
 
-export default function TargetPanel({ step, lightweight = false }: { step: Step; lightweight?: boolean }) {
+function TargetPanel({
+  step,
+  lightweight = false,
+  orientOpen,
+}: {
+  step: Step;
+  lightweight?: boolean;
+  /** 카메라 모드: 진행 흐름의 orient 상태일 때만 true (DESIGN 2-1). 없으면(보기 모드) 단계가 바뀔 때 3초 동안 스스로 보여 준다 */
+  orientOpen?: boolean;
+}) {
   const facing = facingText(step);
   // 단계가 바뀌면 서는 방향 안내를 ORIENT_SEC 동안 크게 보여 준다
   // (안내를 이미 닫은 단계의 key만 기록 — 새 단계가 되면 자동으로 다시 보인다)
@@ -42,7 +51,7 @@ export default function TargetPanel({ step, lightweight = false }: { step: Step;
     const timer = setTimeout(() => setDismissedKey(key), ORIENT_SEC * 1000);
     return () => clearTimeout(timer);
   }, [step.key]);
-  const showOrient = dismissedKey !== step.key;
+  const showOrient = orientOpen ?? dismissedKey !== step.key;
 
   return (
     <section
@@ -78,3 +87,6 @@ export default function TargetPanel({ step, lightweight = false }: { step: Step;
     </section>
   );
 }
+
+// 카메라 모드에서는 진행 흐름 시계 때문에 부모가 0.1초마다 다시 그려지므로, 받는 값이 같으면 다시 그리지 않는다
+export default memo(TargetPanel);
