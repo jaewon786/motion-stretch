@@ -46,7 +46,7 @@ export default function TargetPanel({ step, lightweight = false }: { step: Step;
   return (
     <section
       aria-label="정답 자세"
-      className="glass relative min-h-[420px] overflow-hidden rounded-[2rem] md:min-h-[560px]"
+      className="glass bracket relative min-h-[420px] overflow-hidden rounded-[2rem] md:min-h-[560px]"
     >
       <TargetScene step={step} lightweight={lightweight} />
 

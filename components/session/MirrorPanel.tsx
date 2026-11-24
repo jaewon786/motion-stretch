@@ -66,7 +66,7 @@ export default function MirrorPanel({
   return (
     <section
       aria-label="내 자세"
-      className="glass relative min-h-[420px] overflow-hidden rounded-[2rem] bg-ink md:min-h-[560px]"
+      className="glass bracket relative min-h-[420px] overflow-hidden rounded-[2rem] bg-ink md:min-h-[560px]"
     >
       {/* 큰 화면: 내 동작을 거울처럼 따라 하는 3D 마네킹 (자세 인식이 준비된 뒤에 그린다) */}
       {poseStatus === "ready" && (

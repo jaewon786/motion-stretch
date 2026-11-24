@@ -7,7 +7,7 @@ import { HOLD_SEC } from "@/lib/config/thresholds";
 
 export default function MoveCard({ move, order }: { move: Move; order: number }) {
   return (
-    <article className="glass group flex flex-col overflow-hidden rounded-3xl">
+    <article className="glass bracket group flex flex-col overflow-hidden rounded-2xl">
       <div className="relative h-56 border-b border-line">
         <MovePreview pose={move.pose} keyJoints={move.keyJoints} facing={move.facing} />
         <span className="absolute left-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-lime text-sm font-black text-ink">
@@ -20,7 +20,8 @@ export default function MoveCard({ move, order }: { move: Move; order: number })
         )}
       </div>
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="text-lg font-bold leading-snug">{move.name}</h3>
+        <p className="hud-label">move {String(order).padStart(2, "0")} · {move.facing === "side" ? "side view" : "front view"}</p>
+        <h3 className="mt-1 text-lg font-bold leading-snug text-ice">{move.name}</h3>
         <p className="mt-1 text-sm text-sky">{move.target}</p>
         <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
           <div className="rounded-xl bg-white/5 px-3 py-2">

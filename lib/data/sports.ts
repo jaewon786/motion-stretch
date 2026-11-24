@@ -10,6 +10,7 @@
 // - 유지 시간은 동작마다 두지 않고 lib/config/thresholds.ts 의 HOLD_SEC 하나만 쓴다
 
 import type { JointAngleId, LimbPose, PoseSpec, Side } from "@/lib/pose/types";
+import { CONFIRM_SEC, HOLD_SEC, ORIENT_SEC } from "@/lib/config/thresholds";
 
 export type SportId = "soccer" | "running" | "basketball" | "tennis";
 
@@ -389,4 +390,12 @@ export function getSteps(sport: Sport): Step[] {
       },
     ];
   });
+}
+
+/** 자세를 맞추는 데 걸리는 평균 시간 가정(초) — 예상 소요 시간 안내용 */
+const ALIGN_GUESS_SEC = 5;
+
+/** 예상 소요 시간(분): 단계마다 방향 안내 + 자세 맞추기 + 자세 확인 + 유지 */
+export function estimateMinutes(stepCount: number) {
+  return Math.max(1, Math.round((stepCount * (ORIENT_SEC + ALIGN_GUESS_SEC + CONFIRM_SEC + HOLD_SEC)) / 60));
 }

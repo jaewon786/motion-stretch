@@ -13,6 +13,14 @@ const pretendard = localFont({
   preload: false, // 파일이 2MB라 미리 불러오지 않고, 그동안은 기본 글꼴로 보여 준다
 });
 
+// HUD 숫자·라벨용 고정폭 글꼴 — Geist Mono 가변 글꼴 파일 (npm 패키지 geist, OFL 라이선스, 외부 다운로드 없음)
+const hudMono = localFont({
+  src: "../node_modules/geist/dist/fonts/geist-mono/GeistMono-Variable.woff2",
+  variable: "--font-hud-mono",
+  weight: "100 900",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   // 브라우저 탭 제목과 검색·공유 미리보기에 쓰이는 앱 소개
   title: "모션 스트레치",
@@ -22,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
+    <html lang="ko" className={`${pretendard.variable} ${hudMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         {/* 좁은 화면(스마트폰) 안내 — PRD 4번 예외 흐름, DESIGN 1-1 (폭 768px 미만에서만 보임) */}
         <div

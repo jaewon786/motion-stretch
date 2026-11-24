@@ -7,8 +7,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import SiteHeader from "@/components/ui/SiteHeader";
 import MoveCard from "@/components/moves/MoveCard";
-import { estimateMinutes } from "@/components/home/SportCard";
-import { PAIN_WARNING, SPORTS, getSport, getSteps } from "@/lib/data/sports";
+import { PAIN_WARNING, SPORTS, estimateMinutes, getSport, getSteps } from "@/lib/data/sports";
 
 // 4개 종목 화면을 빌드 때 미리 만든다. 그 밖의 주소는 아래에서 notFound()로 404
 // (이 프로젝트는 cacheComponents가 켜져 있어 dynamicParams 설정을 쓸 수 없다)
@@ -74,7 +73,10 @@ async function SportContent({ params }: { params: Params }) {
               >
                 {sport.emoji}
               </span>
-              <h1 className="text-4xl font-black tracking-tight md:text-5xl">{sport.name} 스트레칭</h1>
+              <div>
+                <p className="hud-label text-sky">sport / {sport.id}</p>
+                <h1 className="mt-1 text-4xl font-black tracking-tight text-ice md:text-5xl">{sport.name} 스트레칭</h1>
+              </div>
             </div>
             <p className="mt-4 max-w-xl text-muted">{sport.summary}을 운동 전에 차례로 늘려 줍니다.</p>
           </div>

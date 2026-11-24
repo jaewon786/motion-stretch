@@ -65,7 +65,7 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
               <span className="text-muted">
                 {sport.emoji} {sport.name}
               </span>
-              <span className="font-bold tabular-nums text-lime">
+              <span className="font-mono font-bold tabular-nums text-lime">
                 {stepIndex + 1}/{steps.length}
               </span>
               <span className="truncate font-semibold">

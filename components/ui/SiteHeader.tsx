@@ -14,9 +14,12 @@ export default function SiteHeader() {
             <path d="M5 9.5l7 1.5 7-3.5M12 11v5l-3.5 5M12 16l4 4.5" />
           </svg>
         </span>
-        <span className="text-lg font-black tracking-tight">모션 스트레치</span>
+        <span className="flex flex-col leading-none">
+          <span className="text-lg font-black tracking-tight text-ice">모션 스트레치</span>
+          <span className="hud-label mt-1 text-[9px]">pose lab · v1</span>
+        </span>
       </Link>
-      <span className="hidden items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-xs text-muted sm:flex">
+      <span className="hidden items-center gap-1.5 rounded-full border border-line bg-ink/40 px-3 py-1.5 text-xs text-muted backdrop-blur sm:flex">
         <span aria-hidden>🔒</span> 카메라 영상은 이 기기 밖으로 나가지 않습니다
       </span>
     </header>

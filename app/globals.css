@@ -1,15 +1,21 @@
 @import "tailwindcss";
 
-/* 앱 전체 색 토큰 — Design Ref: DESIGN 1 "야간 경기장" 느낌: 어두운 남색 배경, 반투명 유리 패널, 형광 라임 강조 */
+/*
+ * 앱 전체 색 토큰 — 디자인 리뉴얼(immersive-design 설계 4번)
+ * "모션 캡처 실험실": 차가운 단색 회청색 바탕 + 두 강조색(라임 = 내 동작·행동, 하늘색 = 정답·기술 정보)
+ * 기존 토큰 이름(ink, line, muted, lime, sky …)은 그대로 두고 값만 바꿔 다른 화면이 함께 따라오게 한다.
+ */
 :root {
-  --ink: #060a16; /* 가장 어두운 바탕 (3D 무대 배경과 같은 색) */
-  --ink-2: #0b1224; /* 한 단계 밝은 바탕 */
-  --panel: rgba(15, 23, 42, 0.55); /* 유리 패널 */
-  --line: rgba(148, 163, 184, 0.16); /* 얇은 테두리 */
-  --text: #e8eef8;
-  --muted: #94a3b8;
-  --lime: #c6ff3d; /* 강조색 */
-  --sky: #38bdf8; /* 정답 캐릭터 색 */
+  --ink: #05070b; /* 가장 어두운 바탕 (3D 무대 배경과 같은 색) */
+  --ink-2: #0a0e15; /* 한 단계 밝은 바탕 */
+  --panel: rgba(12, 17, 26, 0.58); /* 유리 패널 */
+  --line: rgba(180, 196, 220, 0.14); /* 얇은 테두리 */
+  --text: #e6edf6;
+  --muted: #8b98aa; /* = steel, 차가운 회청색 */
+  --steel: #8b98aa;
+  --ice: #dbe7f3; /* 밝은 회백색 (제목) */
+  --lime: #c6ff3d; /* 강조색: 내 동작·주요 행동 */
+  --sky: #7dd3fc; /* 강조색: 정답·기술 정보 */
   --good: #22c55e; /* 관절 맞음 */
   --warn: #facc15; /* 조금 어긋남 */
   --bad: #ef4444; /* 많이 어긋남 */
@@ -21,12 +27,15 @@
   --color-line: var(--line);
   --color-text: var(--text);
   --color-muted: var(--muted);
+  --color-steel: var(--steel);
+  --color-ice: var(--ice);
   --color-lime: var(--lime);
   --color-sky: var(--sky);
   --color-good: var(--good);
   --color-warn: var(--warn);
   --color-bad: var(--bad);
   --font-sans: var(--font-noto-kr), system-ui, sans-serif;
+  --font-mono: var(--font-hud-mono), ui-monospace, monospace;
 }
 
 html {
@@ -36,20 +45,71 @@ html {
 body {
   color: var(--text);
   background:
-    radial-gradient(1200px 600px at 85% -10%, rgba(56, 189, 248, 0.14), transparent 60%),
-    radial-gradient(900px 500px at -10% 20%, rgba(198, 255, 61, 0.08), transparent 60%),
-    var(--ink);
+    radial-gradient(1100px 620px at 78% 8%, rgba(125, 211, 252, 0.1), transparent 62%),
+    radial-gradient(900px 560px at 8% 85%, rgba(139, 152, 170, 0.1), transparent 60%),
+    linear-gradient(180deg, #070a10 0%, var(--ink) 55%);
   background-attachment: fixed;
   font-family: var(--font-sans);
   word-break: keep-all; /* 한국어 단어가 줄 끝에서 쪼개지지 않게 */
+}
+
+/* 필름 그레인 — 화면 전체에 아주 옅게 (클릭을 막지 않음) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain 0.9s steps(4) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-3%, 2%); }
+  50% { transform: translate(2%, -3%); }
+  75% { transform: translate(-1%, -2%); }
+  100% { transform: translate(0, 0); }
 }
 
 /* 반투명 유리 패널 */
 .glass {
   background: var(--panel);
   border: 1px solid var(--line);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+}
+
+/* HUD 라벨: 대문자 고정폭 작은 글자 (기술 문서 느낌) */
+.hud-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+/* 모서리 괄호: 네 모서리에 짧은 선 (HUD 프레임) */
+.bracket {
+  position: relative;
+}
+.bracket::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  --c: rgba(219, 231, 243, 0.55);
+  --l: 14px;
+  background:
+    linear-gradient(var(--c), var(--c)) top left / var(--l) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) top left / 1px var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / var(--l) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 1px var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / var(--l) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 1px var(--l) no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / var(--l) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 1px var(--l) no-repeat;
 }
 
 /* 키보드로 이동할 때 초점 표시 (접근성) */
@@ -65,5 +125,8 @@ body {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+  body::after {
+    animation: none;
   }
 }

@@ -28,7 +28,7 @@ export default function MoveInfo({ step, mode, nav }: { step: Step; mode: Sessio
   return (
     <section
       aria-label="동작 정보"
-      className={`glass flex flex-col rounded-[2rem] p-6 md:p-8 ${wide ? "md:col-span-2" : ""}`}
+      className={`glass bracket flex flex-col rounded-[2rem] p-6 md:p-8 ${wide ? "md:col-span-2" : ""}`}
     >
       <p className="text-sm font-semibold text-sky">{step.move.target}</p>
       <h2 className="mt-2 text-3xl font-black leading-tight tracking-tight md:text-4xl">

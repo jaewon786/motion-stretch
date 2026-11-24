@@ -36,7 +36,7 @@ export type StageCanvasProps = {
   className?: string;
 };
 
-const BG = "#060a16";
+const BG = "#05070b"; // 디자인 리뉴얼: 새 바탕색(--ink)과 같게
 
 /** 캐릭터 방향 회전을 부드럽게 따라가는 무리 (정면 ↔ 옆 전환이 뚝 끊기지 않게) */
 function YawGroup({ yawDeg, mirror, children }: { yawDeg: number; mirror: boolean; children: ReactNode }) {
