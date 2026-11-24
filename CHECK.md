@@ -9,7 +9,8 @@
 공개 전에 막아야 할 중간 위험 3건이 있었다 (1~3번). 비밀 키·프롬프트·영상 처리에서는 확인된 문제가 없다.
 
 **고친 기록 (STEP 5 Act)**
-- 2026-11-24 · 1번 고침: `/api/coach` 맨 앞에서 출처(Sec-Fetch-Site → Origin)와 Content-Type을 검사. 다시 확인 — `text/plain` 400, 다른 사이트(Sec-Fetch-Site·Origin) 403, 같은 출처·우리 화면 fetch 200(AI 문구 1.1~1.3초), 헤더 없는 curl 200. **남은 공개 전 항목: 2·3번**
+- 2026-11-24 · 1번 고침: `/api/coach` 맨 앞에서 출처(Sec-Fetch-Site → Origin)와 Content-Type을 검사. 다시 확인 — `text/plain` 400, 다른 사이트(Sec-Fetch-Site·Origin) 403, 같은 출처·우리 화면 fetch 200(AI 문구 1.1~1.3초), 헤더 없는 curl 200.
+- 2026-11-24 · 2번 고침: `.vercelignore` 추가 (`.env*`·`*.pem`·`.claude/`·`.bkit/`·`trash-can/`·`node_modules/`·`.next/`). 다시 확인 — 같은 규칙 문법인 git 매칭으로 비밀·로컬 파일 10개 제외, 앱 코드·MediaPipe 모델·설정 파일은 포함 확인. Vercel CLI가 이 PC에 없어 `vercel deploy --dry` 실제 실행은 배포할 때 한 번 더 확인할 것. 배포 시 Vercel 환경 변수에는 `OPENAI_API_KEY`(필요하면 `OPENAI_MODEL`)만 등록. **남은 공개 전 항목: 3번**
 
 ---
 
@@ -18,7 +19,7 @@
 | 순위 | 심각도 | 위치 | 문제 | 고침 제안 | 확인 |
 |---|---|---|---|---|---|
 | 1 ✅ 고침 | 중간 | `app/api/coach/route.ts:52-58` | Content-Type·Origin을 확인하지 않음. 다른 사이트가 방문자 브라우저로 `text/plain` POST를 보내면 사전 확인(preflight) 없이 처리되어, 방문자 IP마다 따로 세는 분당 30회 제한을 피해 OpenAI 비용을 쓰게 할 수 있음 | 함수 맨 앞에서 `content-type`이 `application/json`이고 `sec-fetch-site`가 `same-origin`(또는 `origin`이 우리 주소)이 아니면 400/403 | 직접 확인: `text/plain` 요청이 200으로 처리됨 |
-| 2 | 중간 | 프로젝트 루트 (`.vercelignore` 없음) | Vercel CLI 배포는 `.gitignore`가 아니라 `.vercelignore`를 따름. `.env`(GITHUB·SUPABASE·VERCEL·OPENAI 토큰)가 배포 소스에 섞여 올라갈 수 있음 | `.vercelignore`에 `.env*` 추가, Vercel 환경 변수에는 `OPENAI_API_KEY`(필요하면 `OPENAI_MODEL`)만 등록 | 직접 확인: `.vercelignore` 없음 |
+| 2 ✅ 고침 | 중간 | 프로젝트 루트 (`.vercelignore` 없음) | Vercel CLI 배포는 `.gitignore`가 아니라 `.vercelignore`를 따름. `.env`(GITHUB·SUPABASE·VERCEL·OPENAI 토큰)가 배포 소스에 섞여 올라갈 수 있음 | `.vercelignore`에 `.env*` 추가, Vercel 환경 변수에는 `OPENAI_API_KEY`(필요하면 `OPENAI_MODEL`)만 등록 | 직접 확인: `.vercelignore` 없음 |
 | 3 | 중간 | `lib/coach/rateLimit.ts`, `route.ts` | 메모리 기반 횟수 제한은 Vercel에서 서버 개수만큼 늘어나고 다시 시작하면 초기화됨 (설계 때 알고 있던 "최선 노력" 한계). 전체 사용량 상한이 없음 | OpenAI 대시보드에서 프로젝트 월 사용 한도(budget) 설정 — 공개 전 필수. 코드에 서버 전체 하루 호출 상한 추가 | 코드 확인 |
 | 4 | 낮음 | `route.ts:54-55` | 본문을 다 읽은 뒤 2048자 검사 | `content-length` > 2048이면 먼저 400 | 코드 확인 |
 | 5 | 낮음 | `next.config.ts` | 보안 헤더 없음 (클릭재킹 등) | `headers()`로 `X-Frame-Options: DENY`, `Permissions-Policy: camera=(self), microphone=()`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin` (CSP는 MediaPipe용 `'wasm-unsafe-eval'` 필요) | 코드 확인 |
