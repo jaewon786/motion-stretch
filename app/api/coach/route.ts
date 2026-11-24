@@ -49,7 +49,32 @@ function clientKey(request: Request): string {
   return forwarded?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "local";
 }
 
+/**
+ * 우리 화면에서 보낸 요청인지 (CHECK.md 1번: 다른 사이트가 방문자 브라우저를 시켜 호출하는 것 막기)
+ * - 요즘 브라우저는 Sec-Fetch-Site를 붙인다 → same-origin만 허용
+ * - 그 헤더가 없으면 Origin이 우리 주소인지 본다
+ * - 둘 다 없으면 브라우저가 아닌 호출(curl 등)이라 이 공격과 무관 → 형식 검사·횟수 제한에 맡긴다
+ */
+function isSameOrigin(request: Request): boolean {
+  const site = request.headers.get("sec-fetch-site");
+  if (site) return site === "same-origin";
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+  try {
+    return new URL(origin).host === request.headers.get("host");
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
+  // 0) 출처 검사 — 다른 사이트에서 온 요청은 OpenAI를 부르기 전에 거절 (CHECK.md 1번)
+  if (!isSameOrigin(request)) return json({ error: "forbidden" }, 403);
+  // JSON 요청만 받는다. text/plain 같은 "단순 요청"은 브라우저 사전 확인(preflight) 없이 다른 사이트에서 보낼 수 있다
+  if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
+    return json({ error: "invalid_input" }, 400);
+  }
+
   // 1) 형식 검사 — 크기·JSON·필드 (DESIGN 3-4 400 조건)
   const raw = await request.text().catch(() => "");
   if (!raw || raw.length > MAX_BODY_CHARS) return json({ error: "invalid_input" }, 400);
