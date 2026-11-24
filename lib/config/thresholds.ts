@@ -50,6 +50,12 @@ export const COACH_RATE_PER_MIN = 30;
 /** 교정 문구 최대 글자 수 */
 export const COACH_MAX_CHARS = 40;
 
+/**
+ * 서버 전체가 하루(UTC)에 OpenAI를 부르는 최대 횟수. 넘으면 기본 문구만 돌려준다 (CHECK.md 3번, 비용 상한)
+ * 한 사람이 15초 유지 동작 6개를 하면 AI 요청이 대략 수십 번이므로, 하루 수십 명 시연에 충분한 값
+ */
+export const COACH_DAILY_AI_MAX = 2000;
+
 /** 서버가 429를 돌려줬을 때 브라우저가 요청을 쉬는 시간(초) */
 export const COACH_RATE_LIMIT_BACKOFF_SEC = 60;
 

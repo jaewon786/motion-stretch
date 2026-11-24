@@ -12,7 +12,7 @@ import { computeAngles } from "@/lib/pose/angles";
 import { solvePose } from "@/lib/pose/skeleton";
 import { factText, ruleText, type WorstJoint } from "@/lib/coach/ruleText";
 import { checkCoachText, parseCoachRequest } from "@/lib/coach/validate";
-import { allowRequest } from "@/lib/coach/rateLimit";
+import { allowDailyAiCall, allowRequest } from "@/lib/coach/rateLimit";
 
 /**
  * 기본 모델 — 1.5초 안에 답해야 해서 직접 재 보고 골랐다 (2026-11-24, 4회 평균):
@@ -101,6 +101,8 @@ export async function POST(request: Request) {
   // 키가 없거나(SC-7) 이미 정답 범위(±15°) 안이면 AI를 부르지 않는다
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey || Math.abs(worst.diff) <= GREEN_DEG) return rule();
+  // 서버 전체 하루 상한을 넘으면 AI 대신 기본 문구 (CHECK.md 3번 비용 안전장치)
+  if (!allowDailyAiCall()) return rule();
 
   // 4) OpenAI 호출 — 1.5초 넘으면 끊고 기본 문구
   const sideName = req.side === "left" ? " (왼쪽)" : req.side === "right" ? " (오른쪽)" : "";
