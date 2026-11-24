@@ -53,7 +53,8 @@ export default function Home() {
         <main className="mx-auto w-full max-w-6xl px-5 md:px-8">
           {/* ── 1막: 소개 ── */}
           <section className="flex min-h-[calc(100svh-6rem)] flex-col justify-center pb-10">
-            <div className="max-w-xl">
+            {/* 소개 글 묶음만 20px 아래로 (사용자 요청) — 세로 가운데 정렬은 그대로 두고 보이는 위치만 옮긴다 */}
+            <div className="max-w-xl translate-y-5">
               <p className="t-subhead font-semibold text-lime">운동 전 자세 코치</p>
               <h1 className="t-large mt-2 text-text md:text-[56px] md:leading-[64px] md:tracking-[-0.5px]">
                 종목에 맞는 스트레칭,
