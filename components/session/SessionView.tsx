@@ -14,6 +14,7 @@ import { getSport, getSteps, type SportId } from "@/lib/data/sports";
 import { useCamera } from "@/lib/camera/useCamera";
 import { usePoseLandmarker } from "@/lib/pose/usePoseLandmarker";
 import { usePoseComparison } from "@/lib/pose/usePoseComparison";
+import { useCoachText } from "@/lib/coach/useCoachText";
 import {
   averageVisibility,
   initSession,
@@ -55,6 +56,9 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
 
   // 정답과 비교: 핵심 관절별 차이·색·일치도 (DESIGN 2 처리 3b~4, SC-3)
   const comparison = usePoseComparison(frameRef, step, poseReady);
+  // 교정 문구: 자세를 맞추는 동안만 (일시정지·몸 이탈 중에는 AI 요청도 멈춤 — DESIGN 2-1 paused, 2 처리 6)
+  const coaching = flowOn && (phase === "aligning" || phase === "confirming" || phase === "holding");
+  const coach = useCoachText(comparison, step, coaching);
   // 진행 흐름 시계가 최신 일치도를 읽을 수 있게 ref에 담아 둔다 (화면 다시 그리기와 분리)
   const scoreRef = useRef<number | null>(null);
   useEffect(() => {
@@ -200,6 +204,7 @@ export default function SessionView({ sportId, mode }: { sportId: SportId; mode:
             phase={phase}
             step={step}
             score={comparison?.score ?? null}
+            coach={coaching ? coach : null}
             onSkip={onSkip}
             doneHref={`/sports/${sport.id}`}
           />

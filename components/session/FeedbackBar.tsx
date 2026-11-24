@@ -12,6 +12,7 @@ import { CONFIRM_SEC, HOLD_SEC, ORIENT_SEC, PASS_SCORE } from "@/lib/config/thre
 import type { Step } from "@/lib/data/sports";
 import { canSkip, type SessionPhase, type SessionState } from "@/lib/session/sessionMachine";
 import { facingText } from "./TargetPanel";
+import type { CoachLine } from "@/lib/coach/useCoachText";
 
 type Props = {
   state: SessionState;
@@ -19,6 +20,8 @@ type Props = {
   step: Step;
   /** 지금 일치도 (판정 보류·사람 없음이면 null) */
   score: number | null;
+  /** 교정 문구 (작업 13). 자세를 맞추는 중이 아니면 null */
+  coach: CoachLine | null;
   onSkip: () => void;
   /** 끝난 뒤 돌아갈 곳 (완료 화면은 작업 14) */
   doneHref: string;
@@ -100,7 +103,7 @@ function describe(state: SessionState, phase: SessionPhase, step: Step, passing:
   }
 }
 
-export default function FeedbackBar({ state, phase, step, score, onSkip, doneHref }: Props) {
+export default function FeedbackBar({ state, phase, step, score, coach, onSkip, doneHref }: Props) {
   const passing = score !== null && score >= PASS_SCORE;
   const { title, detail, count } = describe(state, phase, step, passing);
   const holdStopped = phase === "holding" && !passing;
@@ -162,6 +165,17 @@ export default function FeedbackBar({ state, phase, step, score, onSkip, doneHre
         <Link href={doneHref} className="btn btn-md btn-filled">
           동작 목록으로 <Icon name="chevronRight" />
         </Link>
+      )}
+
+      {/* 교정 문구 — 자세를 맞추는 동안 항상 보임 (SC-7). AI 문구인지 기본 문구인지 작게 표시 (DESIGN 1-3) */}
+      {coach && (
+        <p className="t-callout flex basis-full items-center gap-3 rounded-2xl bg-fill px-4 py-3">
+          <Icon name="bulb" className="shrink-0 text-lime" />
+          <span role="status" aria-live="polite" className="min-w-0 flex-1">
+            {coach.text}
+          </span>
+          <span className="t-caption shrink-0 text-muted">{coach.source === "ai" ? "AI" : "기본 문구"}</span>
+        </p>
       )}
     </section>
   );

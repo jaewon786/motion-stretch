@@ -15,6 +15,8 @@ export type JointResult = {
   joint: JointAngleId;
   /** 내 각도 − 정답 각도 (도) */
   diff: number;
+  /** 정답 각도 (도) — 몸통 기울기 교정 문구의 방향을 정할 때 쓴다 (DESIGN 3-3) */
+  target: number;
   /** 0~100 점 */
   score: number;
   grade: JointGrade;
@@ -63,7 +65,7 @@ export function comparePose(
       continue;
     }
     const diff = mine[joint] - target[joint];
-    joints.push({ joint, diff, score: jointScore(diff), grade: jointGrade(diff) });
+    joints.push({ joint, diff, target: target[joint], score: jointScore(diff), grade: jointGrade(diff) });
   }
   if (joints.length === 0) return { joints, excluded, score: null, worst: null };
   const score = joints.reduce((sum, j) => sum + j.score, 0) / joints.length;
